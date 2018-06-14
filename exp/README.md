@@ -9,3 +9,12 @@ This is the place for experimentation. This file describes the experimentation w
 
 ### 2.SDL_first_approach
   - First attempt to play a waveform using SDL library.
+  
+
+###  3.embedded_systems_project 
+  - Project carried out during the embedded systems course in my master studies. 
+  - It uses SDL_mixer to play some predefined sounds. It was created to be run on a Raspberry Pi where:
+    - wiringPi library is used for threading, i2c, interruptions, ...
+    - the note is selected according to the distance of an object to the sensor
+    - drums are played with buttons
+    - a LED panel shows a different combination according to the playing music.
