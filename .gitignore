@@ -3,3 +3,10 @@
 ################################################################################
 
 /x64/Debug
+/.vs
+/exp/1.javidx9_videos
+/synthesizer.sln
+/synthesizer.vcxproj.user
+/synthesizer.vcxproj
+/synthesizer.vcxproj.filters
+/Debug
