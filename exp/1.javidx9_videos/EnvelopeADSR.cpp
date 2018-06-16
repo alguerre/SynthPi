@@ -1,20 +1,17 @@
 #include <iostream>
 #include "EnvelopeADSR.h"
 
-EnvelopeADSR::EnvelopeADSR(double dSA,
-    double dAT,
-    double dDT,
-    double dSL,
-    double dRT) {
-    // Constructor, parameters initialization
-    this->dStartAmplitude = dSA;
-    this->dAttackTime = dAT;
-    this->dDecayTime = dDT;
-    this->dSustainLevel = dSL;
-    this->dReleaseTime = dRT;
+EnvelopeADSR::EnvelopeADSR() {
+    // Constructor, properties initialization
+    this->dStartAmplitude = 0.0;
+    this->dAttackTime = 0.0;
+    this->dDecayTime = 0.0;
+    this->dSustainLevel = 0.0;
+    this->dReleaseTime = 0.0;
     this->dTriggerOffTime = 0.0;
     this->dTriggerOnTime = 0.0;
     this->bNoteOn = false;
+    this->bIsCreated = false;
 }
 
 
@@ -23,19 +20,46 @@ EnvelopeADSR::~EnvelopeADSR() {
 }
 
 
-void EnvelopeADSR::NoteOn(double dTimeOn) {
+void EnvelopeADSR::Create(double dSA,
+    double dAT,
+    double dDT,
+    double dSL,
+    double dRT) {
+    // Initialization of envelop object
+    this->dStartAmplitude = dSA;
+    this->dAttackTime = dAT;
+    this->dDecayTime = dDT;
+    this->dSustainLevel = dSL;
+    this->dReleaseTime = dRT;
+    this->dTriggerOffTime = 0.0;
+    this->dTriggerOnTime = 0.0;
+    this->bNoteOn = false;
+    this->bIsCreated = true;
+}
+
+int EnvelopeADSR::NoteOn(double dTimeOn) {
+    if (this->bIsCreated == false)
+        return 1;
+
     this->dTriggerOnTime = dTimeOn;
     this->bNoteOn = true;
+    return 0;
 }
 
 
-void EnvelopeADSR::NoteOff(double dTimeOff) {
+int EnvelopeADSR::NoteOff(double dTimeOff) {
+    if (this->bIsCreated == false)
+        return 1;
+
     this->dTriggerOffTime = dTimeOff;
     this->bNoteOn = false;
+    return 0;
 }
 
 
 double EnvelopeADSR::GetAmplitude(double dTime) {
+    if (this->bIsCreated == false)
+        return 1.0;
 
     double dAmplitude = 0.0;
     double dLifeTime = dTime - this->dTriggerOnTime;
@@ -78,7 +102,13 @@ double EnvelopeADSR::GetAmplitude(double dTime) {
 }
 
 
-void EnvelopeADSR::Print(void) {
+bool EnvelopeADSR::IsCreated(void) {
+    return this->bIsCreated;
+}
+
+
+int EnvelopeADSR::Print(void) {
+
     std::cout << 
         "\nStart amplitude:   " << this->dStartAmplitude <<
         "\nAttack time:       " << this->dAttackTime <<
@@ -88,5 +118,10 @@ void EnvelopeADSR::Print(void) {
         "\nTrigger on time:   " << this->dTriggerOnTime <<
         "\nTrigger off time:  " << this->dTriggerOffTime <<
         std::endl;
+
+    if (this->bIsCreated == false)
+        return 1;
+    else
+        return 0;
 }
 
