@@ -13,17 +13,19 @@ private:
     double dTriggerOffTime;
     double dTriggerOnTime;
     bool   bNoteOn;
-    bool   bNoteOff;
+    bool   bIsCreated;
 
 public:
     // Constructor
-    EnvelopeADSR(double, double, double, double, double);
+    EnvelopeADSR();
 
     // Methods
-    void NoteOn(double);
-    void NoteOff(double);
+    void Create(double, double, double, double, double);
+    int NoteOn(double);
+    int NoteOff(double);
     double GetAmplitude(double);
-    void Print(void);
+    bool IsCreated(void);
+    int Print(void);
 
     // Destructor
     ~EnvelopeADSR();

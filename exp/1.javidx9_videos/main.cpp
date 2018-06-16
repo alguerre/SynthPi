@@ -7,18 +7,15 @@ Goals of this code:
     - Learn basics on sounds generation.
     - Study C++.
     - Understand the library olcNoiseMaker.h by javidx9.
+    - Create a basic prototype of synthesizer.
 */
 
-#include <iostream>
-using namespace std;
-
-#include "simple_piano.h"
-
+#include "synth_prototype.h"
 
 int main(){
 
-    print_sound_hardware();
-    piano_monophonic();
+   synth_prototype();
+
 
     return 0;
 }

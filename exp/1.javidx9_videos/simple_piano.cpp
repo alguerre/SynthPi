@@ -1,35 +1,45 @@
+#define _USE_MATH_DEFINES  // this must be first to use cmath 
+#include <cmath>
 #include <iostream>
 #include <map>
+#include "olcNoiseMaker.h"
+#include "oscillators.h"
+#include "EnvelopeADSR.h"
 using namespace std;
 
-#include "olcNoiseMaker.h"
 
-
-// Frequency of note
+// Global variables
 atomic<double> dFrequencyOutput = 0.0;
+double dVolume = 0.2;
 
-/* Note: since the make_noise* function is executed continously in the main
+// Generate envelope
+double dStartAmplitude = 1.0;
+double dAttackTime = 0.10;
+double dDecayTime = 0.01;
+double dSustainAmplitude = 0.8;
+double dReleaseTime = 0.40;
+
+EnvelopeADSR envelope(dStartAmplitude,
+    dAttackTime,
+    dDecayTime,
+    dSustainAmplitude,
+    dReleaseTime);
+
+
+/* Note: since the make_noise function is executed continously in the main
 thread through SetUserFunction(double(*func)(double)) method and its
 input function only accepts as input dTime, then it is necessary to
 create a global variable dFrequencyOutput to be able to change the
-frequency. Other way would be to create N different functions make_noise*,
+frequency. Other way would be to create N different functions make_noise,
 each one for a different frequency. */
 
 
-double make_noise_sine(double dTime) {
-    /* MAKE_NOISE_SINE generate sinusoidal sound wave. */
-    double dOutput = sin(dFrequencyOutput * 2.0 * 3.14159 * dTime);
-    return dOutput * 0.5;  // Master Volume
-}
-
-
-double make_noise_square(double dTime) {
-    /* MAKE_NOISE_SQUARE generate sinusoidal sound wave. */
-    double dOutput = sin(dFrequencyOutput * 2.0 * 3.14159 * dTime);
-    if (dOutput > 0.0)
-        return 0.3;
-    else
-        return -0.3;
+double make_noise(double dTime) {
+    /* MAKE_NOISE generate a wave form given by the selected oscillator. */
+    double dOutput = envelope.GetAmplitude(dTime) *
+        1.0 * oscillator(dFrequencyOutput, dTime, OSC_SINE);
+    //double dOutput = 1.0 * oscillator(dFrequencyOutput, dTime, OSC_SINE);
+    return dOutput * dVolume;
 }
 
 
@@ -63,7 +73,7 @@ void create_first_sound() {
     /*CREATE_FIRST_SOUND is the first attempt to play a sinusoidal waveform
     through the output audio device.*/
     // Get all sound hardware
-    vector<wstring> devices = olcNoiseMaker<short>::Enumerate();
+    vector<wstring> devices = olcNoiseMaker<char>::Enumerate();
 
     // Create sound machine
     /* Parameters:
@@ -86,7 +96,7 @@ void create_first_sound() {
     */
 
     // Link noise function with sound machine
-    sound.SetUserFunction(make_noise_sine);
+    sound.SetUserFunction(make_noise);
     while (1) {}
 
     /* Note: SetUserFunction has as input a pointer to a function. That
@@ -100,7 +110,7 @@ void create_first_sound() {
 void piano_monophonic() {
     /* PIANO allows to play a song in A major key using the keyboard. */
 
-    /* Map of note - frequency */
+    // Map of note - frequency
     map<char, double> A_major_key;
     A_major_key['A'] = 261.6;  // C
     A_major_key['S'] = 293.6;  // D
@@ -119,22 +129,30 @@ void piano_monophonic() {
     olcNoiseMaker<char> sound(devices[0], 44100, 1, 8, 512);
 
     // Link noise function with sound machine
-    sound.SetUserFunction(make_noise_square);
+    sound.SetUserFunction(make_noise);
 
     // Piano keyboard
-    int iCurrentKey = -1;
+    
+    int siCurrentKey = -1;
     bool bKeyPressed = false;
     while (1) {
         bKeyPressed = false;
         for (int k = 0; k < 8; k++) {
             if (GetAsyncKeyState((unsigned char)(keys[k])) & 0x8000) {
-                dFrequencyOutput = A_major_key[keys[k]];
                 bKeyPressed = true;
-                break;  // to avoid the possibility of produce two simulateous sounds
+                if (siCurrentKey != k){  // not generate new freq if equal
+                    dFrequencyOutput = A_major_key[keys[k]]/2;
+                    envelope.NoteOn(sound.GetTime());
+                    siCurrentKey = k;
+                }
             }
         }
-        if (!bKeyPressed) {
-            dFrequencyOutput = 0;
+        if (!bKeyPressed){
+            if (siCurrentKey != -1) {
+                envelope.NoteOff(sound.GetTime());
+                siCurrentKey = -1;
+            }
         }
     }
+
 }

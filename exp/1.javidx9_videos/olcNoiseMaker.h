@@ -190,7 +190,6 @@ public:
 
 		/* Count number of available devices. */
 		int nDeviceCount = waveOutGetNumDevs();
-		cout << "[Enumerate] Total number of devices: " << nDeviceCount << endl;
 
 		/* Initialize output vector of waveform-audio output devices. */
 		vector<wstring> sDevices;  

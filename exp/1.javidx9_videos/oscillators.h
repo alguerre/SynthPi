@@ -3,13 +3,14 @@
 #ifndef _SOUND_EFFECTS_h
 #define _SOUND_EFFECTS_h
 
-// General purpose oscillator
-#define OSC_SINE 0
-#define OSC_SQUARE 1
-#define OSC_TRIANGLE 2
-#define OSC_SAW_ANA 3
-#define OSC_SAW_DIG 4
+typedef enum {
+    OSC_SINE,
+    OSC_SQUARE,
+    OSC_TRIANGLE,
+    OSC_SAW_ANA,
+    OSC_SAW_DIG
+} Osc_t;
 
-double oscillator(double dFreq, double dTime, int nType);
+double oscillator(double dFreq, double dTime, Osc_t eType, double dLFOAmplitude = 0.0, double dLFOHertz = 0.0, int iArmonics = 50);
 
 #endif
