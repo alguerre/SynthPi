@@ -8,6 +8,10 @@ This is the place for experimentation. This file describes the experimentation w
   - Sound Synthesizer #4 - Waveout API, Sequencing & Ducktales: https://www.youtube.com/watch?v=roRH3PdTajs
   - SPRs in current prototype:
   	- SPR-1: Instrument sounds are not like in the video #3.
+	- SPR-2: Volume change is not correctly implemented. Maybe a mutex is needed. Only two states, 0 or 1. 
+  - Evolutions:
+  	- Include polyphony.
+	- Include drums. 
 
 ### 2.SDL_first_approach
   - First attempt to play a waveform using SDL library.
