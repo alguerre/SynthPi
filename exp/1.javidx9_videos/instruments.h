@@ -7,7 +7,8 @@ typedef enum {
     INS_BELL,
     INS_BELL8,
     INS_HARMONICA,
-    INS_TEST
+    INS_ORGAN,
+    INS_DEBUG
 } Instrument_t;
 
 void update_envelope(Instrument_t eInstrument, EnvelopeADSR &oEnvelope);

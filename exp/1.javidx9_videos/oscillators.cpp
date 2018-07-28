@@ -9,7 +9,7 @@ double oscillator(double dFreq, double dTime, Osc_t eType, double dLFOHertz, dou
     double dOutput = 0.0;
 
     // Frequency oscillation times time
-    double dW_T = dFreq * 2.0 * M_PI * dTime + 
+    double dW_T = dFreq * 2.0 * M_PI * dTime +
         dLFOAmplitude * dFreq * (sin(dFreq * 2.0 * M_PI * dTime)); 
 
     switch (eType) {
@@ -18,7 +18,7 @@ double oscillator(double dFreq, double dTime, Osc_t eType, double dLFOHertz, dou
         break;
 
     case OSC_SQUARE:
-        dOutput = sin(dW_T ) > 0 ? 1.0 : -1.0;
+        dOutput = sin(dW_T) > 0 ? 1.0 : -1.0;
         break;
 
     case OSC_TRIANGLE:

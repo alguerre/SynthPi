@@ -1,5 +1,8 @@
+#include <string>
+
 #ifndef _ENVELOPEADSR_h
 #define _ENVELOPEADSR_h
+
 
 class EnvelopeADSR {
 
@@ -14,13 +17,14 @@ private:
     double dTriggerOnTime;
     bool   bNoteOn;
     bool   bIsCreated;
+    std::string sInstrument;
 
 public:
     // Constructor
     EnvelopeADSR();
 
     // Methods
-    void Create(double, double, double, double, double);
+    void Create(double, double, double, double, double, std::string);
     int NoteOn(double);
     int NoteOff(double);
     double GetAmplitude(double);

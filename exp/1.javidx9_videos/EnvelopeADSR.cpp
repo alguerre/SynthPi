@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "EnvelopeADSR.h"
 
 EnvelopeADSR::EnvelopeADSR() {
@@ -24,7 +25,8 @@ void EnvelopeADSR::Create(double dSA,
     double dAT,
     double dDT,
     double dSL,
-    double dRT) {
+    double dRT, 
+    std::string sInstrument) {
     // Initialization of envelop object
     this->dStartAmplitude = dSA;
     this->dAttackTime = dAT;
@@ -35,6 +37,7 @@ void EnvelopeADSR::Create(double dSA,
     this->dTriggerOnTime = 0.0;
     this->bNoteOn = false;
     this->bIsCreated = true;
+    this->sInstrument = sInstrument;
 }
 
 int EnvelopeADSR::NoteOn(double dTimeOn) {
@@ -110,13 +113,12 @@ bool EnvelopeADSR::IsCreated(void) {
 int EnvelopeADSR::Print(void) {
 
     std::cout << 
+        "\nENVELOPE:          " << this->sInstrument <<
         "\nStart amplitude:   " << this->dStartAmplitude <<
         "\nAttack time:       " << this->dAttackTime <<
         "\nDecay time:        " << this->dDecayTime <<
         "\nSustain level:     " << this->dSustainLevel <<
         "\nRelease time:      " << this->dReleaseTime <<
-        "\nTrigger on time:   " << this->dTriggerOnTime <<
-        "\nTrigger off time:  " << this->dTriggerOffTime <<
         std::endl;
 
     if (this->bIsCreated == false)
@@ -124,4 +126,3 @@ int EnvelopeADSR::Print(void) {
     else
         return 0;
 }
-
