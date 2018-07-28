@@ -8,7 +8,9 @@ This is the place for experimentation. This file describes the experimentation w
   - Sound Synthesizer #4 - Waveout API, Sequencing & Ducktales: https://www.youtube.com/watch?v=roRH3PdTajs
   - SPRs in current prototype:
   	- SPR-1: Instrument sounds are not like in the video #3.
+		- SMR-1: char -> short
 	- SPR-2: Volume change is not correctly implemented. Maybe a mutex is needed. Only two states, 0 or 1. 
+		- SMR-2: applied as 10^dVolume.
   - Evolutions:
   	- Include polyphony.
 	- Include drums. 
