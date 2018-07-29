@@ -1,18 +1,20 @@
 #ifndef _INSTRUMENTS_h
 #define _INSTRUMENTS_h
 
+#include <string>
 #include "EnvelopeADSR.h"
 
-typedef enum {
-    INS_BELL,
-    INS_BELL8,
-    INS_HARMONICA,
-    INS_ORGAN,
-    INS_DEBUG
-} Instrument_t;
+class Instrument{
 
-void update_envelope(Instrument_t eInstrument, EnvelopeADSR &oEnvelope);
+    public:
+        Instrument(std::string="Instrument");
 
-double play_instrument(Instrument_t eInstrument, EnvelopeADSR oEnvelope, double dTime, double dFreq);
+        virtual double Play(double, double) = 0; 
+        std::string sLabel;   
+        EnvelopeADSR obEnvelope;
+
+        ~Instrument();
+
+};
 
 #endif

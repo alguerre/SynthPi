@@ -31,4 +31,13 @@
 #define N_KEYS 15
 #define KEYS_SET "AWSEDFTGYHUJKOL"
 
+// Instruments
+typedef enum {
+    INS_BELL,
+    INS_BELL8,
+    INS_HARMONICA,
+    INS_ORGAN,
+    INS_DEBUG
+} Instrument_t;
+
 #endif

@@ -2,6 +2,7 @@
 #include <string>
 #include "EnvelopeADSR.h"
 
+
 EnvelopeADSR::EnvelopeADSR() {
     // Constructor, properties initialization
     this->dStartAmplitude = 0.0;
@@ -40,6 +41,7 @@ void EnvelopeADSR::Create(double dSA,
     this->sInstrument = sInstrument;
 }
 
+
 int EnvelopeADSR::NoteOn(double dTimeOn) {
     if (this->bIsCreated == false)
         return 1;
@@ -67,7 +69,7 @@ double EnvelopeADSR::GetAmplitude(double dTime) {
     double dAmplitude = 0.0;
     double dLifeTime = dTime - this->dTriggerOnTime;
 
-    if (bNoteOn) {
+    if (this->bNoteOn) {
 
         if (dLifeTime <= this->dAttackTime) {
             // In attack Phase - approach max amplitude

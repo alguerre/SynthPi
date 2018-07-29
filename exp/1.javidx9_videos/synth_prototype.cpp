@@ -16,7 +16,11 @@ Goals of this code:
 #include "EnvelopeADSR.h"
 #include "instruments.h"
 #include "constants.h"
-
+#include "instruments/bell8.h"
+#include "instruments/bell.h"
+#include "instruments/organ.h"
+#include "instruments/harmonica.h"
+#include "instruments/debug.h"
 using namespace std;
 
 
@@ -24,15 +28,19 @@ using namespace std;
 static atomic<double> dFrequencyOutput = 0.0;
 static atomic<double> dVolume = INIT_VOLUME;
 static Instrument_t instrument = INS_DEBUG;
-static EnvelopeADSR envelope;
 mutex mtVolume;
+Instrument *pobInstrument = NULL;
 
 
 static double make_noise(double dTime) {
     /* MAKE_NOISE is a wrap to have the accepted format to play the waveform
     in the main thread. */
     double dOutput = 0.0;
-    dOutput = play_instrument(instrument, envelope, dTime, dFrequencyOutput);
+
+    if (pobInstrument == NULL)
+        return 0;
+
+    dOutput = pobInstrument->Play(dTime, dFrequencyOutput); 
 
     if (dVolume < VOLUME_MIN_LIMIT)
         dOutput = 0;
@@ -58,7 +66,6 @@ static void change_volume() {
     else if (dVolume < 0.0)
         dVolume = 0.0;
 
-    wcout << "\rVolume: " << dVolume << "                        ";
 }
 
 
@@ -84,6 +91,13 @@ static void display_keyboard() {
 
 
 static bool choose_instrument() {
+    // Delete previous instrument   
+    if (pobInstrument != NULL) {
+        delete pobInstrument;
+        pobInstrument = NULL;
+    }
+    dFrequencyOutput = 0.0;  // stop previous sound
+
     // Instrument selection
     int user_instrument = -1;
     bool bChooseAgain = true;
@@ -94,22 +108,27 @@ static bool choose_instrument() {
         bChooseAgain = false;
         switch (user_instrument) {
         case INS_BELL:
+            pobInstrument = new Bell();
             instrument = INS_BELL;
             cout << "BELL has been selected." << endl;
             break;
         case INS_BELL8:
+            pobInstrument = new Bell8();
             instrument = INS_BELL8;
             cout << "BELL8 has been selected." << endl;
             break;
         case INS_HARMONICA:
+            pobInstrument = new Harmonica();
             instrument = INS_HARMONICA;
             cout << "HARMONICA has been selected." << endl;
             break;
         case INS_ORGAN:
+            pobInstrument = new Organ();
             instrument = INS_ORGAN;
             cout << "ORGAN has been selected." << endl;
             break;
         case INS_DEBUG:
+            pobInstrument = new Debug();
             instrument = INS_DEBUG;
             cout << "TEST has been selected." << endl;
             break;
@@ -119,17 +138,6 @@ static bool choose_instrument() {
         default:
             cout << "Not available instrument." << endl;
             bChooseAgain = true;
-        }
-    }
-
-    // Define instrument envelope
-    if (bExit == false) {
-        update_envelope(instrument, envelope);
-        if (!envelope.IsCreated()) {
-            cout << "Envelope has not been correctly created!" << endl;
-        }
-        else {
-            envelope.Print();
         }
     }
 
@@ -166,15 +174,13 @@ int main(void) {
 
     // Create sound object
     olcNoiseMaker<short> sound(devices[0], 44100, 1, 8, 512);
-
-    // Link noise function with sound machine
-    sound.SetUserFunction(make_noise);
-    
+ 
     // Let's play
     int siCurrentKey = -1;  // index of pressed key
     bool bIsKeyPressed = false;
     bool bIsPlaying = true;
     bool bExit = choose_instrument();
+    sound.SetUserFunction(make_noise); // Link noise function with sound machine
 
     while (!bExit) {    
 
@@ -187,8 +193,8 @@ int main(void) {
                     bIsKeyPressed = true;
                     if (siCurrentKey != k) {  // not generate new freq if equal
                         dFrequencyOutput = note_freq[keys[k]];
-                        envelope.NoteOn(sound.GetTime());
-                        wcout << "\rNote On : " << sound.GetTime() << "s " << dFrequencyOutput << "Hz";
+                        pobInstrument->obEnvelope.NoteOn(sound.GetTime());
+                        wcout << "\rVolume: " << dVolume << "      Note On : " << sound.GetTime() << "s " << dFrequencyOutput << "Hz";                        
                         siCurrentKey = k;
                     }
                 }
@@ -197,7 +203,7 @@ int main(void) {
             // Unpress note
             if (!bIsKeyPressed) {
                 if (siCurrentKey != -1) {
-                    envelope.NoteOff(sound.GetTime());
+                    pobInstrument->obEnvelope.NoteOff(sound.GetTime());
                     siCurrentKey = -1;
                 }
             }
@@ -209,8 +215,10 @@ int main(void) {
         }
 
         // Select new instrument or exit
+        sound.SetUserFunction(0);  // stop sending output from make_noise
         bExit = choose_instrument();
         bIsPlaying = true;
+        sound.SetUserFunction(make_noise);  // restart sounding
     }
 
     // Call to abort() is done due to main thread is still running.
