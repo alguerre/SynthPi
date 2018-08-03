@@ -33,6 +33,7 @@
 
 // Instruments
 typedef enum {
+    INS_NONE=0,
     INS_BELL,
     INS_BELL8,
     INS_HARMONICA,

@@ -12,15 +12,9 @@ Goals of this code:
 #include <iostream>
 #include <map>
 #include "olcNoiseMaker.h"
-#include "oscillators.h"
-#include "EnvelopeADSR.h"
 #include "instruments.h"
 #include "constants.h"
-#include "instruments/bell8.h"
-#include "instruments/bell.h"
-#include "instruments/organ.h"
-#include "instruments/harmonica.h"
-#include "instruments/debug.h"
+
 using namespace std;
 
 
@@ -66,6 +60,7 @@ static void change_volume() {
     else if (dVolume < 0.0)
         dVolume = 0.0;
 
+    wcout << "\rVolume: " << dVolume << "   Note: " << dFrequencyOutput << "Hz";
 }
 
 
@@ -99,46 +94,11 @@ static bool choose_instrument() {
     dFrequencyOutput = 0.0;  // stop previous sound
 
     // Instrument selection
-    int user_instrument = -1;
-    bool bChooseAgain = true;
     bool bExit = false;
-    while (bChooseAgain) {
-        wcout << "\nSelect a instrument [0-BELL | 1-BELL8 | 2-HARMONICA | 3-ORGAN | 4-DEBUG | 100-EXIT]: ";
-        cin >> user_instrument;
-        bChooseAgain = false;
-        switch (user_instrument) {
-        case INS_BELL:
-            pobInstrument = new Bell();
-            instrument = INS_BELL;
-            cout << "BELL has been selected." << endl;
-            break;
-        case INS_BELL8:
-            pobInstrument = new Bell8();
-            instrument = INS_BELL8;
-            cout << "BELL8 has been selected." << endl;
-            break;
-        case INS_HARMONICA:
-            pobInstrument = new Harmonica();
-            instrument = INS_HARMONICA;
-            cout << "HARMONICA has been selected." << endl;
-            break;
-        case INS_ORGAN:
-            pobInstrument = new Organ();
-            instrument = INS_ORGAN;
-            cout << "ORGAN has been selected." << endl;
-            break;
-        case INS_DEBUG:
-            pobInstrument = new Debug();
-            instrument = INS_DEBUG;
-            cout << "TEST has been selected." << endl;
-            break;
-        case 100:
-            bExit = true;
-            break;
-        default:
-            cout << "Not available instrument." << endl;
-            bChooseAgain = true;
-        }
+    ChooseInstrument *pobChooseInstrument = new ChooseInstrument();
+    pobInstrument = pobChooseInstrument->getInstrument();
+    if (pobInstrument == NULL) {
+        bExit = true;
     }
 
     return bExit;
@@ -149,7 +109,7 @@ int main(void) {
     // Display
     display_options();
     display_keyboard();
-    cout << "bDriverExit = " << bDriverExit << endl;
+
     // Keyboard definition
     map<char, double> note_freq;
     note_freq['A'] = FREQ_C1;   // C
@@ -180,9 +140,9 @@ int main(void) {
     bool bIsKeyPressed = false;
     bool bIsPlaying = true;
     bool bExit = choose_instrument();
-    sound.SetUserFunction(make_noise); // Link noise function with sound machine
 
     while (!bExit) {    
+        sound.SetUserFunction(make_noise);  // Link noise function with sound machine
 
         while (bIsPlaying) {
             bIsKeyPressed = false;
@@ -193,8 +153,7 @@ int main(void) {
                     bIsKeyPressed = true;
                     if (siCurrentKey != k) {  // not generate new freq if equal
                         dFrequencyOutput = note_freq[keys[k]];
-                        pobInstrument->obEnvelope.NoteOn(sound.GetTime());
-                        wcout << "\rVolume: " << dVolume << "      Note On : " << sound.GetTime() << "s " << dFrequencyOutput << "Hz";                        
+                        pobInstrument->obEnvelope.NoteOn(sound.GetTime());            
                         siCurrentKey = k;
                     }
                 }
@@ -218,7 +177,6 @@ int main(void) {
         sound.SetUserFunction(0);  // stop sending output from make_noise
         bExit = choose_instrument();
         bIsPlaying = true;
-        sound.SetUserFunction(make_noise);  // restart sounding
     }
 
     // Wait until driver has detached its thread
