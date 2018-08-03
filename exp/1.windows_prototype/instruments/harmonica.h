@@ -2,7 +2,7 @@
 #define HARMONICA_H
 
 #include <string>
-#include "../instruments.h"
+#include "../instrument.h"
 #include "../EnvelopeADSR.h"
 #include "../oscillators.h"
 

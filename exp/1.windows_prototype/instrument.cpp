@@ -1,4 +1,4 @@
-#include "instruments.h"
+#include "instrument.h"
 #include "instruments/bell8.h"
 #include "instruments/bell.h"
 #include "instruments/organ.h"

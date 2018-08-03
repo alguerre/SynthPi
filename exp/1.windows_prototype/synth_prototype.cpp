@@ -12,7 +12,7 @@ Goals of this code:
 #include <iostream>
 #include <map>
 #include "olcNoiseMaker.h"
-#include "instruments.h"
+#include "instrument.h"
 #include "constants.h"
 
 using namespace std;
