@@ -149,7 +149,7 @@ int main(void) {
     // Display
     display_options();
     display_keyboard();
-
+    cout << "bDriverExit = " << bDriverExit << endl;
     // Keyboard definition
     map<char, double> note_freq;
     note_freq['A'] = FREQ_C1;   // C
@@ -174,7 +174,7 @@ int main(void) {
 
     // Create sound object
     olcNoiseMaker<short> sound(devices[0], 44100, 1, 8, 512);
- 
+    
     // Let's play
     int siCurrentKey = -1;  // index of pressed key
     bool bIsKeyPressed = false;
@@ -221,7 +221,9 @@ int main(void) {
         sound.SetUserFunction(make_noise);  // restart sounding
     }
 
-    // Call to abort() is done due to main thread is still running.
+    // Wait until driver has detached its thread
+    bDriverExit = true;
+    WaitForSingleObject(ghSemaphoreDriver, INFINITE);
 
     return 0;
 }

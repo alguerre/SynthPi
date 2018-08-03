@@ -63,15 +63,16 @@
 #include <atomic>
 #include <condition_variable>
 #include <Windows.h>
-#define MAX_SEM_COUNT 10
+#define MAX_SEM_COUNT 2
 
 using namespace std;
 
 const double PI = 2.0 * acos(0.0);
 
-/*extern HANDLE ghSemaphoreSound = NULL;
-extern HANDLE ghSemaphoreDriver = NULL;
-extern bool bDriverExit = false;*/
+// Semaphores declaration
+extern HANDLE ghSemaphoreDriver;
+extern bool bDriverExit;
+
 
 template<class T>
 class olcNoiseMaker {

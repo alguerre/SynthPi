@@ -1,5 +1,10 @@
 #include "olcNoiseMaker.h"
 
+// Semaphores definition
+HANDLE ghSemaphoreDriver;
+bool bDriverExit = false;
+
+
 template<class T>
 olcNoiseMaker<T>::olcNoiseMaker(
     wstring sOutputDevice, 
@@ -161,14 +166,22 @@ void CALLBACK olcNoiseMaker<T>::waveOutProcWrap(
     ((olcNoiseMaker*)dwInstance)->waveOutProc(hWaveOut, uMsg, dwParam1, dwParam2);
 }
 
-
+int global_test;
 // Main thread. This loop responds to requests from the soundcard to fill 'blocks'
 // with audio data. If no requests are available it goes dormant until the sound
 // card is ready for more data. The block is fille by the "user" in some manner
 // and then issued to the soundcard.
 template<class T>
-void olcNoiseMaker<T>::MainThread()
-{
+void olcNoiseMaker<T>::MainThread(){
+
+    // Semaphore
+    bDriverExit = false;
+    ghSemaphoreDriver = CreateSemaphore( NULL, 0, MAX_SEM_COUNT, NULL);
+    if (ghSemaphoreDriver == NULL){
+        cout << "CreateSemaphore error: " << GetLastError() << endl;
+        return;
+    }
+
     m_dGlobalTime = 0.0;
     double dTimeStep = 1.0 / (double)m_nSampleRate;
 
@@ -214,7 +227,17 @@ void olcNoiseMaker<T>::MainThread()
         waveOutWrite(m_hwDevice, &m_pWaveHeaders[m_nBlockCurrent], sizeof(WAVEHDR));
         m_nBlockCurrent++;
         m_nBlockCurrent %= m_nBlockCount;
+
+    
+        if (bDriverExit == true) {
+            m_bReady = false;
+        }
     }
+
+    // Send signal to the sound module when thread is detached
+    m_thread.detach();
+    ReleaseSemaphore(ghSemaphoreDriver, 1, NULL);
+
 }
 
 
