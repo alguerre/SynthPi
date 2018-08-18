@@ -4,20 +4,12 @@ This is the place for experimentation. This file describes the experimentation w
 ### 1.javidx9_videos
   - (DONE) Sound Synthesizer #1 - Basic Noises: https://www.youtube.com/watch?v=tgamhuQnOkM
   - (DONE) Sound Synthesizer #2 - Oscillators & Envelopes: https://www.youtube.com/watch?v=OSCzKOqtgcA&t=946s
-  - (Instruments->DONE, Polyphony->PENDING) Sound Synthesizer #3 - Instruments & Polyphony:  https://www.youtube.com/watch?v=kDuvruJTjOs
-  - Sound Synthesizer #4 - Waveout API, Sequencing & Ducktales: https://www.youtube.com/watch?v=roRH3PdTajs
-  - SPRs in current prototype:
-  	- SPR-1: Instrument sounds are not like in the video #3.
-		- SMR-1: char -> short
-	- SPR-2: Volume change is not correctly implemented. Maybe a mutex is needed. Only two states, 0 or 1. 
-		- SMR-2: applied as 10^dVolume.
-  - Evolutions:
-  	- Include polyphony.
-	- Include drums. 
+  - (DONE) Sound Synthesizer #3 - Instruments & Polyphony:  https://www.youtube.com/watch?v=kDuvruJTjOs
+  - (DONE) Sound Synthesizer #4 - Waveout API, Sequencing & Ducktales: https://www.youtube.com/watch?v=roRH3PdTajs
 
-### 2.SDL_first_approach
-  - First attempt to play a waveform using SDL library.
-  
+### 2.ALSA_turorial
+  - Small tutorial on how to use ALSA API to play wave forms.
+  - Little external interface in raspberry pi to use a basic key instrument. 
 
 ###  3.embedded_systems_project 
   - Project carried out during the embedded systems course in my master studies. 
