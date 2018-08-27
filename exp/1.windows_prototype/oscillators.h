@@ -8,9 +8,16 @@ typedef enum {
     OSC_SQUARE,
     OSC_TRIANGLE,
     OSC_SAW_ANA,
-    OSC_SAW_DIG
+    OSC_SAW_DIG,
+    OSC_NOISE
 } Osc_t;
 
-double oscillator(double dFreq, double dTime, Osc_t eType, double dLFOAmplitude = 0.0, double dLFOHertz = 0.0, int iArmonics = 50);
+double oscillator(
+    double dFreq, 
+    double dTime,
+    Osc_t eType, 
+    double dLFOAmplitude = 0.0, 
+    double dLFOHertz = 0.0,
+    int iArmonics = 50);
 
 #endif

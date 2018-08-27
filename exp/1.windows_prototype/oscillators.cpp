@@ -4,8 +4,12 @@
 #include "oscillators.h"
 
 
-double oscillator(double dFreq, double dTime, Osc_t eType, double dLFOHertz, double dLFOAmplitude,  int iArmonics) {
+double oscillator(double dFreq, double dTime, Osc_t eType, double dLFOHertz, 
+    double dLFOAmplitude,  int iArmonics) {
+    /* OSCILLATOR returns the the amplitude of the specified oscillator eType
+    at a given moment, given its frequency and LFO characteristics.*/
 
+    // Initialization
     double dOutput = 0.0;
 
     // Frequency oscillation times time
@@ -36,6 +40,10 @@ double oscillator(double dFreq, double dTime, Osc_t eType, double dLFOHertz, dou
 
     case OSC_SAW_DIG:  // computation of sawtooth signal arithmetically
         dOutput = M_2_PI * (dFreq * M_PI * fmod(dTime, 1.0 / dFreq) - M_PI_2);
+        break;
+
+    case OSC_NOISE: 
+        return 2.0 * ((double)rand() / (double)RAND_MAX) - 1.0;
         break;
 
     default:

@@ -9,7 +9,6 @@ Bell8::Bell8(std::string sLabel):Instrument(sLabel){
         BELL8_SUSTAINLEVEL, 
         BELL8_RELEASETIME, 
         BELL8_TAG);
-    this->obEnvelope.Print();
 }
 
 

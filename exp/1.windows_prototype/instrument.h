@@ -3,35 +3,40 @@
 
 #include <iostream>
 #include <string>
-#include "EnvelopeADSR.h"
+#include "envelopeADSR.h"
 #include "constants.h"
 
 
 class Instrument{
 
+    protected:
+        EnvelopeADSR obEnvelope;
+        std::string sLabel;
+        Instrument_t eInstrumentId;
+
     public:
         Instrument(std::string="Instrument");
-
-        virtual double Play(double, double) = 0; 
-        static Instrument *Create();
-
-        std::string sLabel;   
-        EnvelopeADSR obEnvelope;
-
         ~Instrument();
 
+        virtual double Play(double, double) = 0; 
+        static Instrument *Create(Instrument_t eDefaultInstrument = INS_NONE);
+        void NoteOn(double);
+        void NoteOff(double);
+        std::string GetInstrumentLabel();
 };
 
 
 // Client class
 class ChooseInstrument {
     public:
-        ChooseInstrument();
+        ChooseInstrument(Instrument_t eDefaultInstrument = INS_NONE);
         ~ChooseInstrument();
-        Instrument* getInstrument();
+        Instrument * GetInstrument();
+        Instrument_t GetInstrumentId();
 
     private:
         Instrument * pobInstrument;
+        Instrument_t eInstrumentId;
 };
 
 #endif

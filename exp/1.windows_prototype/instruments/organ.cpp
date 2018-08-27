@@ -9,7 +9,6 @@ Organ::Organ(std::string sLabel):Instrument(sLabel){
         ORGAN_SUSTAINLEVEL, 
         ORGAN_RELEASETIME, 
         ORGAN_TAG);
-    this->obEnvelope.Print();
 }
 
 

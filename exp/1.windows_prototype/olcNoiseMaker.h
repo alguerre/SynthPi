@@ -97,19 +97,19 @@ public:
     void Stop();
 
 	// Override to process current sample
-    virtual double UserProcess(double dTime);
+    virtual double UserProcess(int siChannel, double dTime);
 
     double GetTime();
 	
     static vector<wstring> Enumerate();
 
-    void SetUserFunction(double(*func)(double));
+    void SetUserFunction(double(*func)(int, double));
 
     double clip(double dSample, double dMax);
 
 
 private:
-	double(*m_userFunction)(double);
+	double(*m_userFunction)(int, double);
 
 	unsigned int m_nSampleRate;
 	unsigned int m_nChannels;

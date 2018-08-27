@@ -9,7 +9,6 @@ Harmonica::Harmonica(std::string sLabel):Instrument(sLabel){
         HARMONICA_SUSTAINLEVEL, 
         HARMONICA_RELEASETIME, 
         HARMONICA_TAG);
-    this->obEnvelope.Print();
 }
 
 

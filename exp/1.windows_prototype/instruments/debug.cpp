@@ -9,7 +9,6 @@ Debug::Debug(std::string sLabel):Instrument(sLabel){
         DEBUG_SUSTAINLEVEL, 
         DEBUG_RELEASETIME, 
         DEBUG_TAG);
-    this->obEnvelope.Print();
 }
 
 

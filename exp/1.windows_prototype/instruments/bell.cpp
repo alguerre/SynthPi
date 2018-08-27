@@ -9,7 +9,6 @@ Bell::Bell(std::string sLabel):Instrument(sLabel){
         BELL_SUSTAINLEVEL, 
         BELL_RELEASETIME, 
         BELL_TAG);
-    this->obEnvelope.Print();
 }
 
 

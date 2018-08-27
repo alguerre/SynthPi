@@ -19,40 +19,56 @@ using namespace std;
 
 
 // Global variables
-static atomic<double> dFrequencyOutput = 0.0;
 static atomic<double> dVolume = INIT_VOLUME;
-static Instrument_t instrument = INS_DEBUG;
-mutex mtVolume;
-Instrument *pobInstrument = NULL;
+mutex ghNotes;
+mutex ghVolume;
+Instrument *pobInstrument[N_KEYS] = { NULL };
+Instrument *pobDrums[N_DRUMS] = { NULL, NULL, NULL };
 
 
-static double make_noise(double dTime) {
+static double make_noise(int siChannel, double dTime) {
     /* MAKE_NOISE is a wrap to have the accepted format to play the waveform
-    in the main thread. */
-    double dOutput = 0.0;
+    in the main thread of NoiseMaker.cpp */
+
+    // Initialization
+    double dMixedOutput = 0.0;
+    double pdFreqs[N_KEYS] = { FREQ_C1,  FREQ_Cs1, FREQ_D1, FREQ_Ds1, FREQ_E1,
+        FREQ_F1,  FREQ_Fs1, FREQ_G1, FREQ_Gs1, FREQ_A1,
+        FREQ_As1, FREQ_B1,  FREQ_C2, FREQ_Cs2, FREQ_D2 };
 
     if (pobInstrument == NULL)
         return 0;
 
-    dOutput = pobInstrument->Play(dTime, dFrequencyOutput); 
+    // Mix all active sounds
+    ghNotes.lock();
+    for (int siKey = 0; siKey < N_KEYS; siKey++) {
+        dMixedOutput += pobInstrument[siKey]->Play(dTime, pdFreqs[siKey]);
+    }  
+    for (int siDrums = 0; siDrums < N_DRUMS; siDrums++) {
+        dMixedOutput += pobDrums[siDrums]->Play(dTime, 0.0);
+    }
+    ghNotes.unlock();
 
+    // Limit of volume
     if (dVolume < VOLUME_MIN_LIMIT)
-        dOutput = 0;
+        dMixedOutput = 0;
 
-    return dOutput * pow(10.0, dVolume) / 10.0;
+    // Output with adapted volume for a linear change behaviour listening
+    return dMixedOutput * pow(10.0, dVolume) / 10.0;
 }
 
 
-static void change_volume() {   
+static void change_volume() { 
+    /*CHANGE_VOLUME changes the global variable dVolume when Z or X keys are
+    pressed, they are related to the output wave intensity.*/
+
+    ghVolume.lock();
+
     if ((GetAsyncKeyState('Z') & 0x8000) && (dVolume < MAX_VOLUME)){
-        mtVolume.lock();
         dVolume = dVolume + DELTA_VOLUME;
-        mtVolume.unlock();
     }
     else if ((GetAsyncKeyState('X') & 0x8000) && (dVolume > MIN_VOLUME)){
-        mtVolume.lock();
         dVolume = dVolume - DELTA_VOLUME;
-        mtVolume.unlock();
     }  
 
     if (dVolume > 1.0)
@@ -60,44 +76,82 @@ static void change_volume() {
     else if (dVolume < 0.0)
         dVolume = 0.0;
 
-    wcout << "\rVolume: " << dVolume << "   Note: " << dFrequencyOutput << "Hz";
+    ghVolume.unlock();
+
+    wcout << "\rVolume: " << dVolume;
 }
 
 
-static void display_options(){
+static void display_keyboard() {
+    /* DISPLAY_KEYBOARD prints the keyboard schema of our piano.*/
+
+    wcout << "Keyboard schema: " << endl <<
+        "                              |     |     |     |      " << endl <<
+        "                              |  7  |  8  |  9  |      " << endl <<
+        "                              |_____|_____|_____|      " << endl <<
+        "|   |   | |   |   |   |   | |   | |   |   |   |   |   |" << endl <<
+        "|   | W | | E |   |   | T | | Y | | U |   |   | O |   |" << endl <<
+        "|   |___| |___|   |   |___| |___| |___|   |   |___|   |" << endl <<
+        "|     |     |     |     |     |     |     |     |     |" << endl <<
+        "|  A  |  S  |  D  |  F  |  G  |  H  |  J  |  K  |  L  |" << endl <<
+        "|_____|_____|_____|_____|_____|_____|_____|_____|_____|" << endl << 
+        endl;
+
     wcout << "Z -> volume up" << endl <<
         "X -> volume down" << endl <<
         "ESC -> change instrument " << endl;
 }
 
 
-static void display_keyboard() {
+void create_drums() {
+    /* CREATE_DRUMS create the corresponding instruments for a global array
+    consisting of a type of drum per element.*/
+    ChooseInstrument *pobChooseInstrument = NULL;
+    
+    pobChooseInstrument = new ChooseInstrument(INS_DRUM_KICK);
+    pobDrums[0] = pobChooseInstrument->GetInstrument();
 
-    // Display a keyboard
-    wcout << "Keyboard schema: " << endl <<
-        "|   |   | |   |   |   |   | |   | |   |   |   |   |   |" << endl <<
-        "|   | W | | E |   |   | T | | Y | | U |   |   | O |   |" << endl <<
-        "|   |___| |___|   |   |___| |___| |___|   |   |___|   |" << endl <<
-        "|     |     |     |     |     |     |     |     |     |" << endl <<
-        "|  A  |  S  |  D  |  F  |  G  |  H  |  J  |  K  |  L  |" << endl <<
-        "|_____|_____|_____|_____|_____|_____|_____|_____|_____|" << endl << endl;
-            
+    pobChooseInstrument = new ChooseInstrument(INS_DRUM_HIHAT);
+    pobDrums[1] = pobChooseInstrument->GetInstrument();
+
+    pobChooseInstrument = new ChooseInstrument(INS_DRUM_SNARE);
+    pobDrums[2] = pobChooseInstrument->GetInstrument();
 }
 
 
 static bool choose_instrument() {
-    // Delete previous instrument   
-    if (pobInstrument != NULL) {
-        delete pobInstrument;
-        pobInstrument = NULL;
+    /* CHOOSE_INSTRUMENT creates one instrument per note and store them in
+    the global array pobInstrument. A menu to choose the instrument will appear
+    from ChoosInstrument class, if the EXIT instrument is selected then 
+    instrument pointer will be null and the program will finish.*/
+
+    // Delete previous instrument
+    for (int siInstrument = 0; siInstrument < N_KEYS; siInstrument++) {
+        if (pobInstrument[siInstrument] != NULL) {
+            delete pobInstrument[siInstrument];
+            pobInstrument[siInstrument] = NULL;
+        }
     }
-    dFrequencyOutput = 0.0;  // stop previous sound
 
     // Instrument selection
     bool bExit = false;
-    ChooseInstrument *pobChooseInstrument = new ChooseInstrument();
-    pobInstrument = pobChooseInstrument->getInstrument();
-    if (pobInstrument == NULL) {
+    ChooseInstrument *pobChooseInstrument = NULL;
+    Instrument_t eInstrumentId = INS_NONE;
+
+    // Fist instrument definition
+    pobChooseInstrument = new ChooseInstrument();
+    pobInstrument[0] = pobChooseInstrument->GetInstrument();
+    eInstrumentId = pobChooseInstrument->GetInstrumentId();
+
+    // Remaining instruments
+    if (eInstrumentId != INS_NONE) {
+        for (int siInstrument = 1; siInstrument < N_KEYS; siInstrument++) {
+            pobChooseInstrument = new ChooseInstrument(eInstrumentId);
+            pobInstrument[siInstrument] = pobChooseInstrument->GetInstrument();
+        }
+        bExit = false;
+    }
+    else {
         bExit = true;
     }
 
@@ -107,67 +161,91 @@ static bool choose_instrument() {
 
 int main(void) {
     // Display
-    display_options();
     display_keyboard();
 
     // Keyboard definition
-    map<char, double> note_freq;
-    note_freq['A'] = FREQ_C1;   // C
-    note_freq['W'] = FREQ_Cs1;  // C#
-    note_freq['S'] = FREQ_D1;   // D
-    note_freq['E'] = FREQ_Ds1;  // D#
-    note_freq['D'] = FREQ_E1;   // E
-    note_freq['F'] = FREQ_F1;   // F
-    note_freq['T'] = FREQ_Fs1;  // F#
-    note_freq['G'] = FREQ_G1;   // G
-    note_freq['Y'] = FREQ_Gs1;  // G#
-    note_freq['H'] = FREQ_A1;   // A
-    note_freq['U'] = FREQ_As1;  // A#
-    note_freq['J'] = FREQ_B1;   // B
-    note_freq['K'] = FREQ_C2;   // C
-    note_freq['O'] = FREQ_Cs2;  // C#
-    note_freq['L'] = FREQ_D2;   // D
-    char keys[N_KEYS + 1] = KEYS_SET;
-    
-    // Get all sound hardware
-    vector<wstring> devices = olcNoiseMaker<short>::Enumerate();
+    map<char, double> mpNoteFreq;
+    mpNoteFreq['A'] = FREQ_C1;   // C
+    mpNoteFreq['W'] = FREQ_Cs1;  // C#
+    mpNoteFreq['S'] = FREQ_D1;   // D
+    mpNoteFreq['E'] = FREQ_Ds1;  // D#
+    mpNoteFreq['D'] = FREQ_E1;   // E
+    mpNoteFreq['F'] = FREQ_F1;   // F
+    mpNoteFreq['T'] = FREQ_Fs1;  // F#
+    mpNoteFreq['G'] = FREQ_G1;   // G
+    mpNoteFreq['Y'] = FREQ_Gs1;  // G#
+    mpNoteFreq['H'] = FREQ_A1;   // A
+    mpNoteFreq['U'] = FREQ_As1;  // A#
+    mpNoteFreq['J'] = FREQ_B1;   // B
+    mpNoteFreq['K'] = FREQ_C2;   // C
+    mpNoteFreq['O'] = FREQ_Cs2;  // C#
+    mpNoteFreq['L'] = FREQ_D2;   // D
+    char pcKeys[N_KEYS + 1] = KEYS_SET;
+    char pcKeysDrums[N_DRUMS + 1] = KEYS_DRUMS_SET;
 
     // Create sound object
-    olcNoiseMaker<short> sound(devices[0], 44100, 1, 8, 512);
-    
+    vector<wstring> devices = olcNoiseMaker<AUDIOTYPE>::Enumerate();
+    olcNoiseMaker<AUDIOTYPE> sound(devices[0], 
+        SAMPLE_RATE,
+        N_CHANNEL,
+        N_BLOCK, 
+        N_SAMPLES_BLOCK);
+
     // Let's play
-    int siCurrentKey = -1;  // index of pressed key
-    bool bIsKeyPressed = false;
+    int siCurrentKey[N_KEYS] = { -1 };  // index of pressed key
+    int siActiveDrum[N_DRUMS] = { -1,-1,-1 };  // index of pressed drum
     bool bIsPlaying = true;
     bool bExit = choose_instrument();
+    create_drums();
 
     while (!bExit) {    
-        sound.SetUserFunction(make_noise);  // Link noise function with sound machine
+        // Link noise function with sound machine
+        sound.SetUserFunction(make_noise);  
 
         while (bIsPlaying) {
-            bIsKeyPressed = false;
 
-            // Select frequency corresponding to the key
+            // Play instrument
             for (int k = 0; k < N_KEYS; k++) {
-                if (GetAsyncKeyState((unsigned char)(keys[k])) & 0x8000) {
-                    bIsKeyPressed = true;
-                    if (siCurrentKey != k) {  // not generate new freq if equal
-                        dFrequencyOutput = note_freq[keys[k]];
-                        pobInstrument->obEnvelope.NoteOn(sound.GetTime());            
-                        siCurrentKey = k;
+                double dTimeNow = sound.GetTime();
+                ghNotes.lock();
+                if (GetAsyncKeyState(pcKeys[k]) & 0x8000) {
+                    if (siCurrentKey[k] != k) {
+                        pobInstrument[k]->NoteOn(dTimeNow);
+                        siCurrentKey[k] = k;
                     }
                 }
-            }
-
-            // Unpress note
-            if (!bIsKeyPressed) {
-                if (siCurrentKey != -1) {
-                    pobInstrument->obEnvelope.NoteOff(sound.GetTime());
-                    siCurrentKey = -1;
+                else {  // Unpress note
+                    if (siCurrentKey[k] != -1) {
+                        pobInstrument[k]->NoteOff(dTimeNow);
+                        siCurrentKey[k] = -1;
+                    }
                 }
+                ghNotes.unlock();
             }
 
+            // Play drums
+            for (int k = 0; k < N_DRUMS; k++) {
+                double dTimeNow = sound.GetTime();
+                ghNotes.lock();
+                if (GetAsyncKeyState(pcKeysDrums[k]) & 0x8000){
+                    if (siActiveDrum[k] != k) {
+                        pobDrums[k]->NoteOn(dTimeNow);
+                        siActiveDrum[k] = k;
+                    }
+                }
+                else {  // Unpress note
+                    if (siActiveDrum[k] != -1) {
+                        pobDrums[k]->NoteOff(dTimeNow);
+                        siActiveDrum[k] = -1;
+                    }
+                }
+                ghNotes.unlock();
+            }
+
+            // Change volume
             change_volume();
+
+            // Stop playing current instrument
             if (GetAsyncKeyState(VK_ESCAPE)) {
                 bIsPlaying = false;
             }
