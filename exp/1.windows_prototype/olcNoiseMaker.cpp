@@ -103,7 +103,7 @@ void olcNoiseMaker<T>::Stop(){
 
 // Override to process current sample
 template<class T>
-double olcNoiseMaker<T>::UserProcess(double dTime){
+double olcNoiseMaker<T>::UserProcess(int siChannel, double dTime){
     return 0.0;
 }
 
@@ -126,7 +126,7 @@ vector<wstring> olcNoiseMaker<T>::Enumerate(){
 
 
 template<class T>
-void olcNoiseMaker<T>::SetUserFunction(double(*func)(double)){
+void olcNoiseMaker<T>::SetUserFunction(double(*func)(int, double)){
     m_userFunction = func;
 }
 
@@ -196,7 +196,8 @@ void olcNoiseMaker<T>::MainThread(){
         if (m_nBlockFree == 0)
         {
             unique_lock<mutex> lm(m_muxBlockNotZero);
-            m_cvBlockNotZero.wait(lm);
+            while (m_nBlockFree == 0) // sometimes, Windows signals incorrectly
+                m_cvBlockNotZero.wait(lm);
         }
 
         // Block is here, so use it
@@ -209,16 +210,19 @@ void olcNoiseMaker<T>::MainThread(){
         T nNewSample = 0;
         int nCurrentBlock = m_nBlockCurrent * m_nBlockSamples;
 
-        for (unsigned int n = 0; n < m_nBlockSamples; n++)
-        {
-            // User Process
-            if (m_userFunction == nullptr)
-                nNewSample = (T)(clip(UserProcess(m_dGlobalTime), 1.0) * dMaxSample);
-            else
-                nNewSample = (T)(clip(m_userFunction(m_dGlobalTime), 1.0) * dMaxSample);
 
-            m_pBlockMemory[nCurrentBlock + n] = nNewSample;
-            nPreviousSample = nNewSample;
+        for (unsigned int n = 0; n < m_nBlockSamples; n += m_nChannels){
+            // User Process
+            for (unsigned int c = 0; c < m_nChannels; c++){
+                if (m_userFunction == nullptr)
+                    nNewSample = (T)(clip(UserProcess(c, m_dGlobalTime), 1.0) * dMaxSample);
+                else
+                    nNewSample = (T)(clip(m_userFunction(c, m_dGlobalTime), 1.0) * dMaxSample);
+
+                m_pBlockMemory[nCurrentBlock + n + c] = nNewSample;
+                nPreviousSample = nNewSample;
+            }
+
             m_dGlobalTime = m_dGlobalTime + dTimeStep;
         }
 

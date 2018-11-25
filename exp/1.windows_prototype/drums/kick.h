@@ -3,7 +3,7 @@
 
 #include <string>
 #include "../instrument.h"
-#include "../EnvelopeADSR.h"
+#include "../envelopeADSR.h"
 #include "../oscillators.h"
 #include "../constants.h"
 
