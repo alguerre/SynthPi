@@ -4,16 +4,20 @@
 #include <wiringPi.h>
 #define SND_PCM_RATE_STD 44100
 #define SND_PCM_CHANNEL_MONO 1
-#define SND_PCM_PERIOD_SIZE 256
-#define SND_PCM_OSCILLATOR OSC_SINE
-#define FREQ_C 130.183
+#define SND_PCM_CHANNEL_STEREO 2
+#define SND_PCM_PERIOD_SIZE 4 
+#define FREQ_C 130.813 
+#define FREQ_D 146.832
 #define FREQ_E 164.814
+#define FREQ_F 174.614
 #define FREQ_G 195.998
-#define FREQ_B 246.942
+#define FREQ_A 220.000
 #define PIN_KEY_C 25
-#define PIN_KEY_E 24
-#define PIN_KEY_G 23
-#define PIN_KEY_B 22
+#define PIN_KEY_D 24
+#define PIN_KEY_E 23
+#define PIN_KEY_F 22
+#define PIN_KEY_G 21
+#define PIN_KEY_A 29
 #define PIN_OSC_MSB 2
 #define PIN_OSC_LSB 0
 
@@ -93,9 +97,11 @@ int main(void){
     // Initialize wiringPi
     wiringPiSetup();
     pinMode(PIN_KEY_C, INPUT);
+    pinMode(PIN_KEY_D, INPUT);
     pinMode(PIN_KEY_E, INPUT);
+    pinMode(PIN_KEY_F, INPUT);
     pinMode(PIN_KEY_G, INPUT);
-    pinMode(PIN_KEY_B, INPUT);
+    pinMode(PIN_KEY_A, INPUT);
     pinMode(PIN_OSC_MSB, INPUT);
     pinMode(PIN_OSC_LSB, INPUT);    
 
@@ -156,54 +162,41 @@ int main(void){
         exit(1);
     }
 
-    printf("PIN_KEY_C:  %d\n", digitalRead(PIN_KEY_C));
-    printf("PIN_KEY_E:  %d\n", digitalRead(PIN_KEY_E));
-    printf("PIN_KEY_G:  %d\n", digitalRead(PIN_KEY_G));
-    printf("PIN_KEY_B:  %d\n", digitalRead(PIN_KEY_B));
-    printf("OSCILLATOR: %d\n", digitalRead(PIN_OSC_MSB)*2 + digitalRead(PIN_OSC_LSB));
-
-   // Generate and play sounds
+    // Generate and play sounds
     while(1){
         // Select oscillator
         e_oscillator = digitalRead(PIN_OSC_MSB)*2 + digitalRead(PIN_OSC_LSB);
 
-        // Choos frequency
-        int d_freq = 0.0;
-        if (digitalRead(PIN_KEY_C) == 1){
-            d_freq = FREQ_C;
-        }
-        else if (digitalRead(PIN_KEY_E) == 1){
-            d_freq = FREQ_E;
-        }
-        else if (digitalRead(PIN_KEY_G) == 1){
-            d_freq = FREQ_G;
-        }
-        else if (digitalRead(PIN_KEY_B) == 1){
-            d_freq = FREQ_B;
-        }
-
         for (int si_frame = 0; si_frame < SND_PCM_PERIOD_SIZE; si_frame++){
+
+            // Initialization
             d_time = d_time + d_time_elapsed;
             d_mixed_output = 0.0;
             
             // Check key note
-            /* if (digitalRead(PIN_KEY_C) == 1){
+            if (digitalRead(PIN_KEY_C) == 1){
                 d_mixed_output += oscillator(FREQ_C, d_time, e_oscillator);
+            }
+            if (digitalRead(PIN_KEY_D) == 1){
+                d_mixed_output += oscillator(FREQ_D, d_time, e_oscillator);
             }
             if (digitalRead(PIN_KEY_E) == 1){
                 d_mixed_output += oscillator(FREQ_E, d_time, e_oscillator);
             }
+            if (digitalRead(PIN_KEY_F) == 1){
+                d_mixed_output += oscillator(FREQ_F, d_time, e_oscillator);
+            }
             if (digitalRead(PIN_KEY_G) == 1){
                 d_mixed_output += oscillator(FREQ_G, d_time, e_oscillator);
             }
-            if (digitalRead(PIN_KEY_B) == 1){
-                d_mixed_output += oscillator(FREQ_B, d_time, e_oscillator);
-            }*/
+            if (digitalRead(PIN_KEY_A) == 1){
+                d_mixed_output += oscillator(FREQ_A, d_time, e_oscillator);
+            }
 
             // Generate wave
-            d_mixed_output = oscillator(d_freq, d_time, e_oscillator);
             d_buffer[si_frame] = d_mixed_output;
         }
+
         // Write PCM buffer
         snd_pcm_writei(pcm_handle, d_buffer, SND_PCM_PERIOD_SIZE);
     }
