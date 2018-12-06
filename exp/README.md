@@ -8,8 +8,8 @@ This is the place for experimentation. This file describes the experimentation w
   - (DONE) Sound Synthesizer #4 - Waveout API, Sequencing & Ducktales: https://www.youtube.com/watch?v=roRH3PdTajs
 
 ### 2.ALSA_turorial
-  - Small tutorial on how to use ALSA API to play wave forms.
-  - Little external interface in raspberry pi to use a basic key instrument. 
+  - (DONE) Small tutorial on how to use ALSA API to play wave forms.
+  - (DONE) Little external interface in raspberry pi to use a basic key instrument. 
 
 ###  3.embedded_systems_project 
   - Project carried out during the embedded systems course in my master studies. 
