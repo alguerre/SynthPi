@@ -53,8 +53,11 @@ int SpiMcp3008::AnalogRead(const int si_chip_channel) {
   */
   unsigned char puc_spi_data[3];
 
+  if (si_chip_channel > k_spi_max_channel)
+    return -1;
+
   puc_spi_data[0] = 0x1;
-  puc_spi_data[1] = 0x80 | (si_chip_channel << 4);
+  puc_spi_data[1] = 0x80 | ((unsigned char) (si_chip_channel << 0x4));
   puc_spi_data[2] = 0x0;
 
   wiringPiSPIDataRW(this->si_spi_channel, puc_spi_data, 3);
