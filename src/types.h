@@ -2,6 +2,9 @@
 
 #define _TYPES_h
 
+/* TYPES.H is aimed to allocate all the definitions of data types which will be 
+ * part of dataflow the different components of the code. */
+
 /* Oscillators */
 typedef enum {
   OSC_SINE=0,
@@ -11,12 +14,13 @@ typedef enum {
   OSC_NOISE
 } Osc_t;
 
+
+/* Measurements collects all the available variables whose value is set by a 
+ * a external device such as potentiometer, dip, botton... */
 typedef struct measurements {
-  double si_volume;
-  Osc_t e_oscillator_one;
-  Osc_t e_oscillator_two;
-  int si_octave_one;
-  int si_octave_two;
+  int si_volume;
+  Osc_t e_oscillator[2];
+  int si_octave[2];
   int si_lfo;
   int si_attack_time;
   int si_decay_time;

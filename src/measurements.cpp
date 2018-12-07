@@ -3,10 +3,10 @@
 Measurements::Measurements() {
   // Measurements structure initialization
   this->st_measurements.si_volume = 0.0;
-  this->st_measurements.e_oscillator_one = OSC_SINE;
-  this->st_measurements.e_oscillator_two = OSC_SINE;
-  this->st_measurements.si_octave_one = 1;
-  this->st_measurements.si_octave_two = 1;
+  for (int i = 0; i < k_n_oscillators; i++) {
+    this->st_measurements.e_oscillator[i] = OSC_SINE;
+    this->st_measurements.si_octave[i] = 1;
+  }
   this->st_measurements.si_lfo = 0.0;
   this->st_measurements.si_attack_time = 0.0;
   this->st_measurements.si_decay_time = 0.0;
@@ -16,8 +16,31 @@ Measurements::Measurements() {
 
 
 void Measurements::ConfigureOscillators() {
+
+  for (int i = 0; i < k_n_oscillators; i++) {
+    int si_oscillator = 2 * digitalRead(k_gpio_oscillator_m[i]) +
+      digitalRead(k_gpio_oscillator_l[i]);
+
+    switch (si_oscillator) {
+    case 0:
+      this->st_measurements.e_oscillator[i] = OSC_SINE;
+      break;
+    case 1:
+      this->st_measurements.e_oscillator[i] = OSC_SQUARE;
+      break;
+    case 2:
+      this->st_measurements.e_oscillator[i] = OSC_TRIANGLE;
+      break;
+    case 3:
+      this->st_measurements.e_oscillator[i] = OSC_SAW;
+      break;
+    default:
+      this->st_measurements.e_oscillator[i] = OSC_SINE;
+    }
+  }
+  
   this->st_measurements.si_lfo =
-      this->pob_spi->AnalogRead(k_pot_lfo);
+    this->pob_spi->AnalogRead(k_pot_lfo);
 }
 
 
@@ -46,6 +69,7 @@ Meas_t Measurements::GetMeasurements() {
   this->ConfigureOscillators();
   this->ConfigureADSR();
   this->ChangeVolume();
+
   return this->st_measurements;
 }
 
@@ -62,10 +86,10 @@ Meas_t Measurements::GetMeasurements() {
 void Measurements::Print() {
   std::cout <<
       "Volume:           " << this->st_measurements.si_volume <<
-      "\nOscillator one: " << this->st_measurements.e_oscillator_one <<
-      "\nOscillator two: " << this->st_measurements.e_oscillator_two <<
-      "\nOctave one:     " << this->st_measurements.si_octave_one <<
-      "\nOctave two:     " << this->st_measurements.si_octave_two <<
+      "\nOscillator one: " << this->st_measurements.e_oscillator[0] <<
+      "\nOscillator two: " << this->st_measurements.e_oscillator[1] <<
+      "\nOctave one:     " << this->st_measurements.si_octave[0] <<
+      "\nOctave two:     " << this->st_measurements.si_octave[1] <<
       "\nLFO:            " << this->st_measurements.si_lfo <<
       "\nAttack Time:    " << this->st_measurements.si_attack_time <<
       "\nDecay Time:     " << this->st_measurements.si_decay_time <<

@@ -1,11 +1,15 @@
 #include<iostream>
+#include<wiringPi.h>
 #include<wiringPiSPI.h>
+
 #include "constants.h"
+
 #ifndef _MCP3008_h
 
 #define _MCP3008_h
 
 class SpiMcp3008 {
+/* MCP3008 ... todo description */
 private:
     static SpiMcp3008* pob_spi;
     int si_spi_channel = -1;

@@ -1,3 +1,4 @@
+/* DESCRIPTION todo */
 #include <iostream>
 #include <pthread.h>
 #include <semaphore.h>
@@ -8,12 +9,13 @@
 
 // Global variables definition
 Measurements ob_measurements;
+Meas_t st_measurements;
 sem_t mx_measurements;
 bool b_exit = false;
 
 
 bool Exit() {
-  /* EXIT .... todo*/
+  /* EXIT is used to finish the execution of the synthesizer. */
   if ((digitalRead(pk_keys[0]) == HIGH) && 
     (digitalRead(pk_keys[k_n_keys-1]) == HIGH))
     return true;
@@ -23,7 +25,7 @@ bool Exit() {
 
 
 void AudioDriverFunc() {
-  /* AUDIODRIVERFUNC ... todo */
+  /* AUDIODRIVERFUNC launches the audio driver to play sounds. */
   while (b_exit == false) {
     std::cout << "hola" << std::endl;
     delay(1000);
@@ -32,10 +34,11 @@ void AudioDriverFunc() {
 
 
 void MeasurementsFunc() {
-  /* MEASUREMENTSFUNC ... todo */
+  /* MEASUREMENTSFUNC execute all the capabilities related with measurements 
+   * from external devices which are used as configuration. */
   while (b_exit == false) {
     sem_wait(&mx_measurements);
-    ob_measurements.GetMeasurements();
+    st_measurements = ob_measurements.GetMeasurements();
     ob_measurements.Print();
     sem_post(&mx_measurements);
     b_exit = Exit();
@@ -46,7 +49,7 @@ void MeasurementsFunc() {
 
 
 void ConfigureWiringPi() {
-  /* CONFIGUREWIRINGPI ... todo */
+  /* CONFIGUREWIRINGPI setups and initializes the wiringPi utilities. */
   wiringPiSetup();
   for (int i = 0; i < k_n_keys; i++) {
     pinMode(pk_keys[i], INPUT);

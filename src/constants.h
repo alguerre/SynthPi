@@ -2,6 +2,10 @@
 
 #define _CONSTANTS_h
 
+/* CONSTANTS.H is aimed to allocate all the configurable variables whose value 
+ * is not changed by any function or method. It can be understood as a 
+ * configuration file. */
+
 // Spi configuration
 const int k_spi_speed = 1000000;
 const int k_spi_channel = 0;
@@ -16,10 +20,9 @@ const int k_pot_sustain_time = 1;
 const int k_pot_release_time = 0;
 
 // Oscillators
-const int k_gpio_oscillator_one_m = 25;
-const int k_gpio_oscillator_one_l = 24;
-const int k_gpio_oscillator_two_m = 23;
-const int k_gpio_oscillator_two_l = 22;
+const int k_n_oscillators = 2;
+const int k_gpio_oscillator_m[2] = {25, 23};
+const int k_gpio_oscillator_l[2] = {24, 22};
 
 // Keys
 const int k_n_keys = 6;

@@ -9,6 +9,7 @@
 #define _MEASUREMENTS_h
 
 class Measurements {
+/* MEASUREMENTS ... todo description */
 
 private:
   // Singleton
