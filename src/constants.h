@@ -10,6 +10,7 @@
 const int k_spi_speed = 1000000;
 const int k_spi_channel = 0;
 const int k_spi_max_channel = 10;
+const int k_si_default_spi_channel = 0;
 
 // Spi channel for potentiometers
 const int k_pot_volume = 5;
@@ -34,5 +35,7 @@ const int pk_keys[6] = {29, 28, 27, 26, 21, 3};
 #define SND_PCM_CHANNEL_MONO (1)
 #define SND_PCM_CHANNEL_STEREO (2)
 #define SND_PCM_PERIOD_SIZE (4) 
+#define SND_PCM_SOFT_RESAMPLE (1)
+#define SND_PCM_LATENCY (500000)
 
 #endif
