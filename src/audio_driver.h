@@ -14,7 +14,6 @@ private:
 
   // Properties
   snd_pcm_t *pcm_handle = NULL;
-  snd_pcm_hw_params_t *hw_params = NULL;
 
   // Methods
 
@@ -25,9 +24,9 @@ public:
   AudioDriver();
 
   // Methods
-  void ConfigureAlsa();
-  void PlaySound(double[SND_PCM_PERIOD_SIZE]);
-
+  int ConfigureAlsa();
+  int PlaySound(float[SND_PCM_PERIOD_SIZE]);
+  
   // Destructor
   ~AudioDriver();
 

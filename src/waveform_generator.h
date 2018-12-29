@@ -15,15 +15,15 @@ private:
 
   // Properties
   Meas_t st_waveform_config;
-  const double d_time_elapsed = 1.0 / ((double)SND_PCM_RATE_STD);
-  std::vector<double> pv_oscillator_wave[2];
-  std::vector<double> v_envelope;
-  std::vector<double> v_mix_output;
+  const float f_time_elapsed = 1.0 / ((float)SND_PCM_RATE_STD);
+  double f_time;
+  std::vector<float> pv_oscillator_wave[2];
+  std::vector<float> v_envelope;
+  float pf_mix_output[SND_PCM_PERIOD_SIZE];
 
   // Methods
-  void CreateOscillators(double, double, int);
   void CreateEnvelope();
-  double Oscillator(double, double, Osc_t);
+  float Oscillator(float, Osc_t);
 
 public:
 
@@ -31,8 +31,10 @@ public:
   WaveformGenerator();
 
   // Methods
+  void CreateOscillators(float, int);
   void SetConfiguration(Meas_t);
-  std::vector<double> CreateWaveform();
+  float * CreateWaveform();
+  Meas_t GetConfiguration();
 
   // Destructor
   ~WaveformGenerator();
