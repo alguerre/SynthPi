@@ -4,8 +4,8 @@ Measurements::Measurements() {
   // Measurements structure initialization
   this->st_measurements.si_volume = 0.0;
   for (int i = 0; i < k_n_oscillators; i++) {
-    this->st_measurements.e_oscillator[i] = OSC_SINE;
-    this->st_measurements.si_octave[i] = 1;
+    this->st_measurements.pe_oscillator[i] = OSC_SINE;
+    this->st_measurements.psi_octave[i] = 1;
   }
   this->st_measurements.si_lfo = 0.0;
   this->st_measurements.si_attack_time = 0.0;
@@ -23,19 +23,19 @@ void Measurements::ConfigureOscillators() {
 
     switch (si_oscillator) {
     case 0:
-      this->st_measurements.e_oscillator[i] = OSC_SINE;
+      this->st_measurements.pe_oscillator[i] = OSC_SINE;
       break;
     case 1:
-      this->st_measurements.e_oscillator[i] = OSC_SQUARE;
+      this->st_measurements.pe_oscillator[i] = OSC_SQUARE;
       break;
     case 2:
-      this->st_measurements.e_oscillator[i] = OSC_TRIANGLE;
+      this->st_measurements.pe_oscillator[i] = OSC_TRIANGLE;
       break;
     case 3:
-      this->st_measurements.e_oscillator[i] = OSC_SAW;
+      this->st_measurements.pe_oscillator[i] = OSC_SAW;
       break;
     default:
-      this->st_measurements.e_oscillator[i] = OSC_SINE;
+      this->st_measurements.pe_oscillator[i] = OSC_SINE;
     }
   }
   
@@ -86,10 +86,10 @@ Meas_t Measurements::GetMeasurements() {
 void Measurements::Print() {
   std::cout <<
       "Volume:           " << this->st_measurements.si_volume <<
-      "\nOscillator one: " << this->st_measurements.e_oscillator[0] <<
-      "\nOscillator two: " << this->st_measurements.e_oscillator[1] <<
-      "\nOctave one:     " << this->st_measurements.si_octave[0] <<
-      "\nOctave two:     " << this->st_measurements.si_octave[1] <<
+      "\nOscillator one: " << this->st_measurements.pe_oscillator[0] <<
+      "\nOscillator two: " << this->st_measurements.pe_oscillator[1] <<
+      "\nOctave one:     " << this->st_measurements.psi_octave[0] <<
+      "\nOctave two:     " << this->st_measurements.psi_octave[1] <<
       "\nLFO:            " << this->st_measurements.si_lfo <<
       "\nAttack Time:    " << this->st_measurements.si_attack_time <<
       "\nDecay Time:     " << this->st_measurements.si_decay_time <<
@@ -100,4 +100,5 @@ void Measurements::Print() {
 
 // Destructor
 Measurements::~Measurements() {
+  delete pob_spi;
 }
