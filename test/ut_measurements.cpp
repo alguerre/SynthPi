@@ -30,9 +30,9 @@ TEST(MeasurementsTest, ConfigureOscillators) {
   PressEnter(); 
 
   st_measurements = ob_measurements.GetMeasurements();
-  ASSERT_EQ(0, st_measurements.e_oscillator[0]);
-  ASSERT_EQ(0, st_measurements.e_oscillator[1]);
-  ASSERT_EQ(0, st_measurements.si_lfo);
+  EXPECT_EQ(0, st_measurements.pe_oscillator[0]);
+  EXPECT_EQ(0, st_measurements.pe_oscillator[1]);
+  EXPECT_EQ(0, st_measurements.si_lfo);
 
   std::cout << "ConfigureOscillators" << std::endl;
   std::cout << "  1. Up switches for oscillator selection" << std::endl;
@@ -40,25 +40,25 @@ TEST(MeasurementsTest, ConfigureOscillators) {
   PressEnter(); 
 
   st_measurements = ob_measurements.GetMeasurements();
-  ASSERT_EQ(3, st_measurements.e_oscillator[0]);
-  ASSERT_EQ(3, st_measurements.e_oscillator[1]);
-  ASSERT_LT(k_pot_max_threshold * d_max_pot_value, st_measurements.si_lfo);
+  EXPECT_EQ(3, st_measurements.pe_oscillator[0]);
+  EXPECT_EQ(3, st_measurements.pe_oscillator[1]);
+  EXPECT_LT(k_pot_max_threshold * d_max_pot_value, st_measurements.si_lfo);
 
   std::cout << "ConfigureOscillators" << std::endl;
   std::cout << "  1. Configuration 0 1 in both oscillators." << std::endl;
   PressEnter();
 
   st_measurements = ob_measurements.GetMeasurements();
-  ASSERT_EQ(1, st_measurements.e_oscillator[0]);
-  ASSERT_EQ(1, st_measurements.e_oscillator[1]);
+  EXPECT_EQ(1, st_measurements.pe_oscillator[0]);
+  EXPECT_EQ(1, st_measurements.pe_oscillator[1]);
 
   std::cout << "ConfigureOscillators" << std::endl;
   std::cout << "  1. Configuration 1 0 in both oscillators." << std::endl;
   PressEnter();
 
   st_measurements = ob_measurements.GetMeasurements();
-  ASSERT_EQ(2, st_measurements.e_oscillator[0]);
-  ASSERT_EQ(2, st_measurements.e_oscillator[1]);
+  EXPECT_EQ(2, st_measurements.pe_oscillator[0]);
+  EXPECT_EQ(2, st_measurements.pe_oscillator[1]);
 }
 
 
@@ -72,20 +72,20 @@ TEST(MeasurementsTest, ConfigureADSR){
   PressEnter(); 
 
   st_measurements = ob_measurements.GetMeasurements();
-  ASSERT_EQ(0, st_measurements.si_attack_time);
-  ASSERT_EQ(0, st_measurements.si_decay_time);
-  ASSERT_EQ(0, st_measurements.si_sustain_level);
-  ASSERT_EQ(0, st_measurements.si_release_time);
+  EXPECT_EQ(0, st_measurements.si_attack_time);
+  EXPECT_EQ(0, st_measurements.si_decay_time);
+  EXPECT_EQ(0, st_measurements.si_sustain_level);
+  EXPECT_EQ(0, st_measurements.si_release_time);
 
   std::cout << "ConfigureADSR" << std::endl;
   std::cout << "  1. Turn ADSR potentiometers to maximum" << std::endl;
   PressEnter();
 
   st_measurements = ob_measurements.GetMeasurements();
-  ASSERT_LT(k_pot_max_threshold * d_max_pot_value, st_measurements.si_attack_time);
-  ASSERT_LT(k_pot_max_threshold * d_max_pot_value, st_measurements.si_decay_time);
-  ASSERT_LT(k_pot_max_threshold * d_max_pot_value, st_measurements.si_sustain_level);
-  ASSERT_LT(k_pot_max_threshold * d_max_pot_value, st_measurements.si_release_time);
+  EXPECT_LT(k_pot_max_threshold * d_max_pot_value, st_measurements.si_attack_time);
+  EXPECT_LT(k_pot_max_threshold * d_max_pot_value, st_measurements.si_decay_time);
+  EXPECT_LT(k_pot_max_threshold * d_max_pot_value, st_measurements.si_sustain_level);
+  EXPECT_LT(k_pot_max_threshold * d_max_pot_value, st_measurements.si_release_time);
 }
 
 
@@ -99,13 +99,13 @@ TEST(MeasurementsTest, ChangeVolume){
   PressEnter();
 
   st_measurements = ob_measurements.GetMeasurements();
-  ASSERT_EQ(0, st_measurements.si_volume);
+  EXPECT_EQ(0, st_measurements.si_volume);
 
   std::cout << "ChangeVolume" << std::endl;
   std::cout << "  1. Turn Volume potentiometer to maximum" << std::endl;
   PressEnter(); 
 
   st_measurements = ob_measurements.GetMeasurements();
-  ASSERT_LT(k_pot_max_threshold * d_max_pot_value, st_measurements.si_volume);
+  EXPECT_LT(k_pot_max_threshold * d_max_pot_value, st_measurements.si_volume);
 }
 
