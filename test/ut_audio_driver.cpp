@@ -1,72 +1,81 @@
 #include <gtest/gtest.h>
 #include <iostream>
-#include <fstream>
 #include "../src/waveform_generator.h"
 #include "../src/types.h"
 #include "../src/constants.h"
 #include "../src/audio_driver.h"
-#include <alsa/asoundlib.h>
-#include <math.h>
 
 
-Meas_t SimpleSineMeasurements() {
+struct AudioDriverTest : testing::Test {
+  AudioDriver *ob_audiodriver = NULL;
+  WaveformGenerator *ob_waveform = NULL;
   Meas_t st_simple_sine;
-  st_simple_sine.si_volume = 1;
-  st_simple_sine.pe_oscillator[0] = OSC_SINE;
-  st_simple_sine.pe_oscillator[1] = OSC_SINE;
-  st_simple_sine.psi_octave[0] = 1;
-  st_simple_sine.psi_octave[1] = 1;
-  st_simple_sine.si_lfo = 0;
-  st_simple_sine.si_attack_time = 0;
-  st_simple_sine.si_decay_time = 0;
-  st_simple_sine.si_sustain_level = 0;
-  st_simple_sine.si_release_time = 0;
-  return st_simple_sine;
+  int si_configuration = -1;
+  const float f_freq = 440.0;
+  float *pf_waveform;
+
+  AudioDriverTest() {
+    this->ob_waveform = new WaveformGenerator;
+    this->ob_audiodriver = new AudioDriver;
+    ob_waveform->SetConfiguration(this->st_simple_sine);
+    this->si_configuration = ob_audiodriver->ConfigureAlsa();
+  }
+
+  Meas_t SimpleSineMeasurements() {
+    Meas_t st_meas;
+    st_meas.si_volume = 1;
+    st_meas.pe_oscillator[0] = OSC_SQUARE;
+    st_meas.pe_oscillator[1] = OSC_SINE;
+    st_meas.psi_octave[0] = 1;
+    st_meas.psi_octave[1] = 1;
+    st_meas.si_lfo = 0;
+    st_meas.si_attack_time = 0;
+    st_meas.si_decay_time = 0;
+    st_meas.si_sustain_level = 0;
+    st_meas.si_release_time = 0;
+    return st_meas;
+  }
+
+  int Play() {
+    int si_frames = 0;
+
+    ob_waveform->CreateOscillators(f_freq, 0);
+    pf_waveform = ob_waveform->CreateWaveform();
+    si_frames = ob_audiodriver->PlaySound(pf_waveform);
+
+    return si_frames;
+  }
+
+  ~AudioDriverTest() {
+    delete ob_audiodriver;
+    delete ob_waveform;
+  }
+
+};
+
+
+TEST_F(AudioDriverTest, Configuration) {
+  EXPECT_EQ(this->si_configuration, 0);
 }
 
 
-/*struct AudioDriverTest : testing::Test {
-
-};*/
-
-
-TEST(AudioDriverTest, PlaySimpleSine) {
-  // Generate waveform
-  WaveformGenerator *ob_waveform;
-  Meas_t st_sine_config = SimpleSineMeasurements();
-  ob_waveform = new WaveformGenerator;
-  ob_waveform->SetConfiguration(st_sine_config);
-  float *pf_waveform;
-
-  // Play sound
-  AudioDriver *ob_audiodriver;
-  ob_audiodriver = new AudioDriver;
-  ob_audiodriver->ConfigureAlsa();
+TEST_F(AudioDriverTest, PlayPeriod) {
+  int si_frames = Play();
+  EXPECT_EQ(si_frames, SND_PCM_PERIOD_SIZE);
+}
 
 
-  std::cout << "    Playing sine wave" << std::endl;
+TEST_F(AudioDriverTest, PlaySound) {
+  int si_played = 0;
+  int si_cycles_per_sec = SND_PCM_RATE_STD / SND_PCM_PERIOD_SIZE;
 
- // for (int i = 0; i < 1000; i++) {
-  int si_written_frames = 0;
-  float f_time = 0;
-  float f_time_elapsed = 1.0 / ((float)SND_PCM_RATE_STD);
-  float f_buffer[SND_PCM_PERIOD_SIZE];
-
-  while (1){
-    ob_waveform->CreateOscillators(440.0, 0);
-    pf_waveform = ob_waveform->CreateWaveform();
-    si_written_frames = ob_audiodriver->PlaySound(pf_waveform);
+  std::cout << "    Playing waveform" << std::endl;
+  for (int i = 0; i < si_cycles_per_sec; i++) {
+    Play();
   }
 
-  EXPECT_EQ(si_written_frames, SND_PCM_PERIOD_SIZE);
-
-
-  // User information
-  int si_played = 0;
   std::cout << "    Have you listened the sound properly? (yes = 1, no = 0)" << std::endl;
   std::cin >> si_played;
+  
   EXPECT_EQ(si_played, 1);
-
-  delete ob_waveform;
-  delete ob_audiodriver;
 }
