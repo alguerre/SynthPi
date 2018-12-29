@@ -19,8 +19,8 @@ typedef enum {
  * a external device such as potentiometer, dip, botton... */
 typedef struct measurements {
   int si_volume;
-  Osc_t e_oscillator[2];
-  int si_octave[2];
+  Osc_t pe_oscillator[2];
+  int psi_octave[2];
   int si_lfo;
   int si_attack_time;
   int si_decay_time;
