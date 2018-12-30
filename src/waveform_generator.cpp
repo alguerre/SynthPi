@@ -79,13 +79,14 @@ float WaveformGenerator::Oscillator(float f_freq, Osc_t eType) {
 }
 
 
-void WaveformGenerator::CreateOscillators(float f_freq, int si_oscillator_idx) {
+void WaveformGenerator::CreateOscillators(float f_freq) {
 
   for (int i = 0; i < SND_PCM_PERIOD_SIZE; i++) {
-    this->pv_oscillator_wave[si_oscillator_idx].at(i) = 
-      this->Oscillator(f_freq, this->st_waveform_config.pe_oscillator[si_oscillator_idx]);
+    for (int j = 0; j < k_n_oscillators; j++) {
+      this->pv_oscillator_wave[j].at(i) =
+        this->Oscillator(f_freq, this->st_waveform_config.pe_oscillator[j]);
+    }
     this->f_time += f_time_elapsed;
-    //std::cout << d_time << std::endl;
   }
     
 }

@@ -31,7 +31,7 @@ public:
   WaveformGenerator();
 
   // Methods
-  void CreateOscillators(float, int);
+  void CreateOscillators(float);
   void SetConfiguration(Meas_t);
   float * CreateWaveform();
   Meas_t GetConfiguration();

@@ -9,7 +9,7 @@
 struct AudioDriverTest : testing::Test {
   AudioDriver *ob_audiodriver = NULL;
   WaveformGenerator *ob_waveform = NULL;
-  Meas_t st_simple_sine;
+  Meas_t st_simple_sine = SimpleSineMeasurements();
   int si_configuration = -1;
   const float f_freq = 440.0;
   float *pf_waveform;
@@ -24,8 +24,8 @@ struct AudioDriverTest : testing::Test {
   Meas_t SimpleSineMeasurements() {
     Meas_t st_meas;
     st_meas.si_volume = 1;
-    st_meas.pe_oscillator[0] = OSC_SQUARE;
-    st_meas.pe_oscillator[1] = OSC_SINE;
+    st_meas.pe_oscillator[0] = OSC_SINE;
+    st_meas.pe_oscillator[1] = OSC_NONE;
     st_meas.psi_octave[0] = 1;
     st_meas.psi_octave[1] = 1;
     st_meas.si_lfo = 0;
@@ -39,7 +39,7 @@ struct AudioDriverTest : testing::Test {
   int Play() {
     int si_frames = 0;
 
-    ob_waveform->CreateOscillators(f_freq, 0);
+    ob_waveform->CreateOscillators(f_freq);
     pf_waveform = ob_waveform->CreateWaveform();
     si_frames = ob_audiodriver->PlaySound(pf_waveform);
 
