@@ -7,7 +7,8 @@
 
 /* Oscillators */
 typedef enum {
-  OSC_SINE=0,
+  OSC_NONE=0,
+  OSC_SINE,
   OSC_SQUARE,
   OSC_TRIANGLE,
   OSC_SAW,

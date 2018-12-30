@@ -46,5 +46,5 @@ int AudioDriver::PlaySound(float f_buffer[SND_PCM_PERIOD_SIZE]) {
 // Destructor
 AudioDriver::~AudioDriver() {
   snd_pcm_close(pcm_handle);
-  delete pcm_handle;
+  free(pcm_handle);
 }
