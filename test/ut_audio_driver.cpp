@@ -23,7 +23,7 @@ struct AudioDriverTest : testing::Test {
 
   Meas_t SimpleSineMeasurements() {
     Meas_t st_meas;
-    st_meas.si_volume = 1;
+    st_meas.si_volume = k_si_adc_max;
     st_meas.pe_oscillator[0] = OSC_SINE;
     st_meas.pe_oscillator[1] = OSC_NONE;
     st_meas.psi_octave[0] = 1;

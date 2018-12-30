@@ -6,6 +6,13 @@
  * is not changed by any function or method. It can be understood as a 
  * configuration file. */
 
+// ADC
+const int k_si_adc_bits = 10;
+const float k_si_r1 = 10e+3;
+const float k_si_r2 = 1e+3;
+const int k_si_adc_max = (pow(2.0, k_si_adc_bits) - 1) * 
+  (k_si_r1) / (k_si_r1 + k_si_r2);
+
 // Spi configuration
 const int k_spi_speed = 1000000;
 const int k_spi_channel = 0;
