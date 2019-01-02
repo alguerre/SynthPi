@@ -2,6 +2,8 @@
 
 #define _CONSTANTS_h
 
+#include <math.h>
+
 /* CONSTANTS.H is aimed to allocate all the configurable variables whose value 
  * is not changed by any function or method. It can be understood as a 
  * configuration file. */
