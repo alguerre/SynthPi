@@ -28,7 +28,7 @@ struct GenerateConfig {
 
   static Meas_t SineConfig() {
     Meas_t st_meas;
-    st_meas.si_volume = 1;
+    st_meas.si_volume = k_si_adc_max;
     st_meas.pe_oscillator[0] = OSC_SINE;
     st_meas.pe_oscillator[1] = OSC_NONE;
     st_meas.psi_octave[0] = 1;
@@ -43,7 +43,7 @@ struct GenerateConfig {
 
   static Meas_t SquareConfig() {
     Meas_t st_meas;
-    st_meas.si_volume = 1;
+    st_meas.si_volume = k_si_adc_max;
     st_meas.pe_oscillator[0] = OSC_SQUARE;
     st_meas.pe_oscillator[1] = OSC_NONE;
     st_meas.psi_octave[0] = 1;
@@ -58,7 +58,7 @@ struct GenerateConfig {
 
   static Meas_t TriangleConfig() {
     Meas_t st_meas;
-    st_meas.si_volume = 1;
+    st_meas.si_volume = k_si_adc_max;
     st_meas.pe_oscillator[0] = OSC_TRIANGLE;
     st_meas.pe_oscillator[1] = OSC_NONE;
     st_meas.psi_octave[0] = 1;
@@ -73,7 +73,7 @@ struct GenerateConfig {
 
   static Meas_t SawtoohConfig() {
     Meas_t st_meas;
-    st_meas.si_volume = 1;
+    st_meas.si_volume = k_si_adc_max;
     st_meas.pe_oscillator[0] = OSC_SAW;
     st_meas.pe_oscillator[1] = OSC_NONE;
     st_meas.psi_octave[0] = 1;
@@ -88,7 +88,7 @@ struct GenerateConfig {
 
   static Meas_t DoubleConfig() {
     Meas_t st_meas;
-    st_meas.si_volume = 1;
+    st_meas.si_volume = k_si_adc_max;
     st_meas.pe_oscillator[0] = OSC_TRIANGLE;
     st_meas.pe_oscillator[1] = OSC_SQUARE;
     st_meas.psi_octave[0] = 1;
@@ -344,8 +344,8 @@ TEST_F(WaveformGeneratorTest, SawtoothOscillator) {
   std::vector<float> vf_waveform;
   std::vector<float> vf_reference;
   Meas_t st_configuration = GenerateConfig::SawtoohConfig();
-  std::string s_filename = "SawtoohOscillator.csv";
-  std::string s_reference = "SawtoohReference.csv";
+  std::string s_filename = "SawtoothOscillator.csv";
+  std::string s_reference = "SawtoothReference.csv";
 
   vf_waveform = Create100Periods(st_configuration);
   vf_reference = GenerateReference::GenerateReferenceVector(f_freq, OSC_SAW, vf_waveform.size());
