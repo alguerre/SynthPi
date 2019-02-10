@@ -1,21 +1,29 @@
-# This Makefile is ready for unit test execution with gtest
 GPP = g++
 
-GPP_TEST_FLAGS = -fprofile-arcs -ftest-coverage
-LD_TEST_FLAGS = -lgcov -L /usr/local/lib -lgtest
+GPP_PRODUCTION_FLAGS = -lwiringPi -lcrypt -lpthread -lasound -lm -Wno-psabi 
+LD_PRODUCTION_FLAGS =
 
-GPP_FLAGS = -lwiringPi -lpthread -lasound -lm -Wno-psabi $(GPP_TEST_FLAGS) -I /usr/local/include
-LD_FLAGS = -Wno-psabi $(LD_TEST_FLAGS) 
+GPP_TEST_FLAGS = -fprofile-arcs -ftest-coverage -I /usr/local/include
+LD_TEST_FLAGS = -Wno-psabi -lgcov -L /usr/local/lib -lgtest
 
-BIN_NAME = synthpi_test
-OBJECTS = audio_driver.o mcp3008.o measurements.o waveform_generator.o
+GPP_FLAGS =  # to be defined as production or test
+LD_FLAGS =   # to be defined as production or test
+  
+BIN_NAME =   # to be defined as production or test
+OBJECTS =    # to be defined as production or test
+
+BIN_TEST = synthpi_test
+BIN_PRODUCTION = synthpi
+
+OBJ_MAIN = synthpi.o
+OBJ_SRC = audio_driver.o mcp3008.o measurements.o waveform_generator.o
 OBJ_TESTS = test.o ut_mcp3008.o ut_measurements.o
 
 SRC = ../src/
 TEST = ../test/
 
-build: $(OBJECTS) $(OBJ_TESTS)
-	$(GPP) -Wall -o $(BIN_NAME) $(OBJ_TESTS) $(OBJECTS) $(GPP_FLAGS) $(LD_FLAGS) 
+build:
+	$(GPP) -Wall -o $(BIN_NAME) $(OBJECTS) $(GPP_FLAGS) $(LD_FLAGS) 
 
 synthpi.o: $(SRC)synthpi.cpp $(SRC)constants.h $(SRC)types.h
 	$(GPP) $(GPP_FLAGS) -c $(SRC)synthpi.cpp
@@ -42,17 +50,37 @@ ut_measurements.o: $(TEST)ut_measurements.cpp
 	$(GPP) $(GPP_FLAGS) -c $(TEST)ut_measurements.cpp
 
 
-.PHONY: all
-all: build
-	mkdir -p objects
-	mv -f *.o objects/.
+.PHONY: copybin
+copybin:
 	mkdir -p ../bin
 	mv $(BIN_NAME) ../bin/.
+
+
+.PHONY: all
+all: BIN_NAME=$(BIN_PRODUCTION)
+all: GPP_FLAGS=$(GPP_PRODUCTION_FLAGS)
+all: LD_FLAGS=$(LD_PRODUCTION_FLAGS)
+all: OBJECTS=$(OBJ_MAIN) $(OBJ_SRC)
+all: $(OBJ_MAIN) $(OBJ_SRC)
+all: build
+all: copybin
+
+
+.PHONY: test
+test: BIN_NAME=$(BIN_TEST)
+test: GPP_FLAGS=$(GPP_PRODUCTION_FLAGS) $(GPP_TEST_FLAGS)
+test: LD_FLAGS=$(LD_PRODUCTION_FLAGS) $(LD_TEST_FLAGS)
+test: OBJECTS=$(OBJ_SRC) $(OBJ_TESTS)
+test: $(OBJ_SRC) $(OBJ_TESTS)
+test: build
+test: copybin
+
 
 .PHONY: clean
 clean:
 	rm -rf *.o objects 
 	rm -f *gcda *gcno *gcov
+
 
 .PHONY: report
 report:
