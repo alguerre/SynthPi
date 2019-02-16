@@ -47,4 +47,8 @@ const int pk_keys[6] = {29, 28, 27, 26, 21, 3};
 #define SND_PCM_SOFT_RESAMPLE (1)
 #define SND_PCM_LATENCY (500000)
 
+
+// ADSR
+const float k_minimum_amplitude_adsr = 0.001;
+
 #endif

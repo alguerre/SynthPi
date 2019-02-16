@@ -19,8 +19,8 @@ LD_TEST_FLAGS = -Wno-psabi -lgcov -L /usr/local/lib -lgtest
 LD_FLAGS =   # to be defined as production or test by corresponding rule
   
 OBJ_MAIN = synthpi.o
-OBJ_SRC = audio_driver.o waveform_generator.o measurements.o  mcp3008.o
-OBJ_TEST = test.o ut_audio_driver.o ut_waveform_generator.o # ut_measurements.o ut_mcp3008.o
+OBJ_SRC = audio_driver.o waveform_generator.o measurements.o  mcp3008.o envelope_adsr.o
+OBJ_TEST = test.o ut_audio_driver.o ut_waveform_generator.o ut_envelope_adsr.o # ut_measurements.o ut_mcp3008.o
 OBJECTS =    # to be defined as production or test by corresponding rule
 
 SRC = ../src/
@@ -46,6 +46,9 @@ waveform_generator.o: $(SRC)waveform_generator.cpp $(SRC)waveform_generator.h
 audio_driver.o: $(SRC)audio_driver.cpp $(SRC)audio_driver.h
 	$(GPP) $(GPP_FLAGS) -c $(SRC)audio_driver.cpp
 
+envelope_adsr.o: $(SRC)envelope_adsr.cpp $(SRC)envelope_adsr.h
+	$(GPP) $(GPP_FLAGS) -c $(SRC)envelope_adsr.cpp
+
 test.o: $(TEST)test.cpp
 	$(GPP) $(GPP_FLAGS) -c $(TEST)test.cpp
 
@@ -60,6 +63,9 @@ ut_waveform_generator.o: $(TEST)ut_waveform_generator.cpp
 
 ut_audio_driver.o: $(TEST)ut_audio_driver.cpp
 	$(GPP) $(GPP_FLAGS) -c $(TEST)ut_audio_driver.cpp
+
+ut_envelope_adsr.o: $(TEST)ut_envelope_adsr.cpp
+	$(GPP) $(GPP_FLAGS) -c $(TEST)ut_envelope_adsr.cpp
 
 
 # Compilation modes
