@@ -14,6 +14,8 @@ private:
 
   // Properties
   snd_pcm_t *pcm_handle = NULL;
+  const float fk_time_elapsed = 1.0/((float)SND_PCM_RATE_STD);
+  float f_time = 0.0;
 
   // Methods
 
@@ -24,8 +26,9 @@ public:
   AudioDriver();
 
   // Methods
-  int ConfigureAlsa();
-  int PlaySound(float[SND_PCM_PERIOD_SIZE]);
+  int ConfigureAlsa(void);
+  int PlaySound(float(*pf_generate_sound)(float));
+  float GetTime(void);
   
   // Destructor
   ~AudioDriver();

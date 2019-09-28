@@ -45,7 +45,6 @@ void WaveformGenerator::SetConfiguration(Meas_t st_measurements) {
   this->f_decay_time    = ((float) st_measurements.si_decay_time) / k_si_adc_max;
   this->f_sustain_level = ((float) st_measurements.si_sustain_level) / k_si_adc_max;
   this->f_release_time  = ((float) st_measurements.si_release_time) / k_si_adc_max;
-  std::cout << "f_volume = " << f_volume << std::endl;
 }
 
 
@@ -54,7 +53,7 @@ Meas_t WaveformGenerator::GetConfiguration() {
 }
 
 
-float WaveformGenerator::Oscillator(float f_freq, Osc_t eType) {
+float WaveformGenerator::Oscillator(const float f_freq, const Osc_t eType) {
   /* OSCILLATOR returns the the amplitude of the specified oscillator eType
   at a given moment given its frequency.*/
 
@@ -94,7 +93,7 @@ float WaveformGenerator::Oscillator(float f_freq, Osc_t eType) {
 }
 
 
-void WaveformGenerator::CreateOscillators(float f_freq) {
+void WaveformGenerator::CreateOscillators(const float f_freq) {
 
   for (int i = 0; i < SND_PCM_PERIOD_SIZE; i++) {
     for (int j = 0; j < k_n_oscillators; j++) {

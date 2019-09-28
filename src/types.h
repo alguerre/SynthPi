@@ -12,6 +12,7 @@ typedef enum {
   OSC_SQUARE,
   OSC_TRIANGLE,
   OSC_SAW,
+  OSC_SAW_DIG,
   OSC_NOISE
 } Osc_t;
 

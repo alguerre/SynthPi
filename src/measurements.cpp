@@ -18,8 +18,8 @@ Measurements::Measurements() {
 void Measurements::ConfigureOscillators() {
 
   for (int i = 0; i < k_n_oscillators; i++) {
-    int si_oscillator = 2 * digitalRead(k_gpio_oscillator_m[i]) +
-      digitalRead(k_gpio_oscillator_l[i]);
+    int si_oscillator = 2 * digitalRead(pk_gpio_oscillator_m[i]) +
+      digitalRead(pk_gpio_oscillator_l[i]);
 
     switch (si_oscillator) {
     case 0:
@@ -83,20 +83,23 @@ Meas_t Measurements::GetMeasurements() {
     return pobMeasurements;
 }*/
 
-void Measurements::Print() {
-  std::cout <<
-      "Volume:           " << this->st_measurements.si_volume <<
-      "\nOscillator one: " << this->st_measurements.pe_oscillator[0] <<
-      "\nOscillator two: " << this->st_measurements.pe_oscillator[1] <<
-      "\nOctave one:     " << this->st_measurements.psi_octave[0] <<
-      "\nOctave two:     " << this->st_measurements.psi_octave[1] <<
-      "\nLFO:            " << this->st_measurements.si_lfo <<
-      "\nAttack Time:    " << this->st_measurements.si_attack_time <<
-      "\nDecay Time:     " << this->st_measurements.si_decay_time <<
-      "\nSustain Level:  " << this->st_measurements.si_sustain_level <<
-      "\nRelease Time:   " << this->st_measurements.si_release_time <<
-      std::endl;
+
+std::ostream& operator << (std::ostream& cout, const Measurements& ob_meas)
+{
+	return std::cout <<
+		"Volume:           " << ob_meas.st_measurements.si_volume <<
+		"\nOscillator one: " << ob_meas.st_measurements.pe_oscillator[0] <<
+		"\nOscillator two: " << ob_meas.st_measurements.pe_oscillator[1] <<
+		"\nOctave one:     " << ob_meas.st_measurements.psi_octave[0] <<
+		"\nOctave two:     " << ob_meas.st_measurements.psi_octave[1] <<
+		"\nLFO:            " << ob_meas.st_measurements.si_lfo <<
+		"\nAttack Time:    " << ob_meas.st_measurements.si_attack_time <<
+		"\nDecay Time:     " << ob_meas.st_measurements.si_decay_time <<
+		"\nSustain Level:  " << ob_meas.st_measurements.si_sustain_level <<
+		"\nRelease Time:   " << ob_meas.st_measurements.si_release_time;
+
 }
+
 
 // Destructor
 Measurements::~Measurements() {

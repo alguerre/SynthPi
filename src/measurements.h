@@ -10,6 +10,7 @@
 
 class Measurements {
 /* MEASUREMENTS ... todo description */
+	friend std::ostream& operator<<(std::ostream&, const Measurements&);
 
 private:
   // Singleton
@@ -34,7 +35,6 @@ public:
   // Methods
   Meas_t GetMeasurements();
   //static Measurements *get_instance(); // TODO
-  void Print();
 
   // Destructor
   ~Measurements();

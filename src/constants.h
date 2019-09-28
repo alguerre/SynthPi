@@ -12,7 +12,7 @@
 const int k_si_adc_bits = 10;
 const float k_si_r1 = 10e+3;
 const float k_si_r2 = 1e+3;
-const int k_si_adc_max = (pow(2.0, k_si_adc_bits) - 1) * 
+const float k_si_adc_max = (pow(2.0, k_si_adc_bits) - 1) * 
   (k_si_r1) / (k_si_r1 + k_si_r2);
 
 // Spi configuration
@@ -31,8 +31,8 @@ const int k_pot_release_time = 0;
 
 // Oscillators
 const int k_n_oscillators = 2;
-const int k_gpio_oscillator_m[2] = {25, 23};
-const int k_gpio_oscillator_l[2] = {24, 22};
+const int pk_gpio_oscillator_m[2] = {25, 23};
+const int pk_gpio_oscillator_l[2] = {24, 22};
 
 // Keys
 const int k_n_keys = 6;
@@ -49,6 +49,6 @@ const int pk_keys[6] = {29, 28, 27, 26, 21, 3};
 
 
 // ADSR
-const float k_minimum_amplitude_adsr = 0.001;
+const float k_minimum_amplitude_adsr = (float) 0.001;
 
 #endif
