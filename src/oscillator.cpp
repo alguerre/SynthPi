@@ -8,36 +8,37 @@ float oscillator(const float f_freq, const float f_time, const Osc_t e_osc,
     at a given moment, given its frequency and LFO characteristics.*/
 
     // Initialization
-    float dOutput = 0.0;
+    float f_output = 0.0;
 
     // Frequency oscillation times time
-    float dW_T = f_freq * 2.0 * M_PI * f_time +
+    float f_wt = f_freq * 2.0 * M_PI * f_time +
         f_lfo_amplitude * f_freq * (sin(f_lfo_hertz * 2.0 * M_PI * f_time));
 
     switch (e_osc) {
     case OSC_SINE:
-        dOutput = sin(dW_T);
+        f_output = sin(f_wt);
         break;
 
     case OSC_SQUARE:
-        dOutput = sin(dW_T) > 0 ? 1.0 : -1.0;
+        f_output = sin(f_wt) > 0 ? 1.0 : -1.0;
         break;
 
     case OSC_TRIANGLE:
-        dOutput = asin(sin(dW_T)) * M_2_PI;
+        f_output = asin(sin(f_wt)) * M_2_PI;
         break;
 
     case OSC_SAW_DIG:  // summation of Fourier harmonics
-        dOutput = 0.0;
+        f_output = 0.0;
 
         for (int n = 1; n < k_si_n_sawdig_harmonics; n++)
-            dOutput += (sin(n * f_freq * 2.0 * M_PI * f_time)) / ((float) n);
+            f_output += (sin(n * f_freq * 2.0 * M_PI * f_time)) / ((float) n);
 
-        dOutput = dOutput * M_2_PI;
+        f_output = f_output * M_2_PI;
         break;
 
     case OSC_SAW:  // computation of sawtooth signal arithmetically
-        dOutput = M_2_PI * (f_freq * M_PI * fmod(f_time, 1.0 / f_freq) - M_PI_2);
+        f_output = M_2_PI *
+          (f_freq * M_PI * fmod(f_time, 1.0 / f_freq) - M_PI_2);
         break;
 
     case OSC_NOISE:
@@ -45,9 +46,14 @@ float oscillator(const float f_freq, const float f_time, const Osc_t e_osc,
         break;
 
     default:
-        dOutput = 0.0;
+        f_output = 0.0;
     }
 
-    return dOutput;
+    // Not generate data for low frequencies
+    if (f_freq < k_f_min_freq){
+      f_output = 0.0;
+    }
+
+    return f_output;
 }
 

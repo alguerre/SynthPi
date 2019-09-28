@@ -53,6 +53,9 @@ const float k_f_minimum_amplitude_adsr = (float) 0.001;
 
 
 // Oscillator
+const float k_f_min_freq = 110.0;
 const int k_si_n_sawdig_harmonics = 10;
+const float k_f_base_freq = 440.0;
+const float k_f_freq_note_interval = pow(2.0, 1.0 / 12.0);
 
 #endif
