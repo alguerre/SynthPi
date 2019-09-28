@@ -3,10 +3,36 @@
 
 #include "types.h"
 
-float oscillator(const float f_freq,
-    const float f_time,
-    const Osc_t e_osc,
-    const float f_lfo_hertz,
-    const float f_lfo_amplitude);
+class Oscillator {
+/* OSCILLATOR generates a oscillating signal using different waveforms (sine,
+ * square, ...). Different effects, such as LFO, can be included. */
+
+
+private:
+
+  // Methods
+  float LowFrequencyOscillator(
+      const float,
+      const float,
+      const float,
+      const float);
+
+public:
+
+  // Constructor
+  Oscillator();
+
+  // Methods
+  float GenerateOscillation(
+      const float,
+      const float,
+      const Config_t,
+      const int);
+
+  // Destructor
+  ~Oscillator();
+
+};
+
 
 #endif

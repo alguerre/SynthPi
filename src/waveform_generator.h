@@ -41,9 +41,9 @@ public:
   WaveformGenerator();
 
   // Methods
-  void SetConfiguration(Meas_t);
+  //void SetConfiguration(Meas_t);
   float * CreateWaveform();
-  Meas_t GetConfiguration();
+  //Meas_t GetConfiguration();
 
   // Destructor
   ~WaveformGenerator();

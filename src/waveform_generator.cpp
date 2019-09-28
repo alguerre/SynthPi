@@ -31,7 +31,7 @@ WaveformGenerator::WaveformGenerator() {
 }
 
 
-void WaveformGenerator::SetConfiguration(Meas_t st_measurements) {
+/*void WaveformGenerator::SetConfiguration(Meas_t st_measurements) {
   this->st_waveform_config = st_measurements;
 
   for (int i = 0; i < k_si_n_oscillators; i++) {
@@ -46,11 +46,11 @@ void WaveformGenerator::SetConfiguration(Meas_t st_measurements) {
   this->f_sustain_level = ((float) st_measurements.si_sustain_level) / k_f_adc_max;
   this->f_release_time  = ((float) st_measurements.si_release_time) / k_f_adc_max;
 }
+*/
 
-
-Meas_t WaveformGenerator::GetConfiguration() {
+/*Meas_t WaveformGenerator::GetConfiguration() {
   return this->st_waveform_config;
-}
+}*/
 
 
 void WaveformGenerator::CreateEnvelope() {

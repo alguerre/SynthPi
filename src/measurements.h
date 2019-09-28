@@ -21,11 +21,11 @@ private:
   SpiMcp3008 *pob_spi = SpiMcp3008::GetInstance(k_si_spi_channel);
 
   // Methods
-  void ConfigureOscillators();
+  void GetOscillators(void);
 
-  void ConfigureADSR();
+  void GetADSR(void);
 
-  void ChangeVolume();
+  void GetVolume(void);
 
 public:
 

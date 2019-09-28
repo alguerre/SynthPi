@@ -7,7 +7,8 @@ Measurements::Measurements() {
     this->st_measurements.pe_oscillator[i] = OSC_SINE;
     this->st_measurements.psi_octave[i] = 1;
   }
-  this->st_measurements.si_lfo = 0;
+  this->st_measurements.si_lfo_amp = 0;
+  this->st_measurements.si_lfo_freq = 0;
   this->st_measurements.si_attack_time = 0;
   this->st_measurements.si_decay_time = 0;
   this->st_measurements.si_sustain_level = 0;
@@ -15,36 +16,33 @@ Measurements::Measurements() {
 }
 
 
-void Measurements::ConfigureOscillators() {
+void Measurements::GetOscillators(void) {
+
 
   for (int i = 0; i < k_si_n_oscillators; i++) {
-    int si_oscillator = 2 * digitalRead(k_psi_gpio_oscillator_m[i]) +
-      digitalRead(k_psi_gpio_oscillator_l[i]);
+    // Select oscillator
+    this->st_measurements.pe_oscillator[i] = static_cast<Osc_t> (
+        digitalRead(k_psi_gpio_oscillator_m[i])*2 +
+        digitalRead(k_psi_gpio_oscillator_l[i])
+        );
 
-    switch (si_oscillator) {
-    case 0:
-      this->st_measurements.pe_oscillator[i] = OSC_SINE;
-      break;
-    case 1:
-      this->st_measurements.pe_oscillator[i] = OSC_SQUARE;
-      break;
-    case 2:
-      this->st_measurements.pe_oscillator[i] = OSC_TRIANGLE;
-      break;
-    case 3:
-      this->st_measurements.pe_oscillator[i] = OSC_SAW;
-      break;
-    default:
-      this->st_measurements.pe_oscillator[i] = OSC_SINE;
-    }
+    // Select octave
+    this->st_measurements.psi_octave[i] = 1 +
+        digitalRead(k_psi_gpio_octave_m[i])*2 +
+        digitalRead(k_psi_gpio_octave_l[i]);
   }
   
-  this->st_measurements.si_lfo =
-    this->pob_spi->AnalogRead(k_si_pot_lfo);
+  // Configure LFO
+  this->st_measurements.si_lfo_amp =
+    this->pob_spi->AnalogRead(k_si_pot_lfo_amp);
+
+  this->st_measurements.si_lfo_freq =
+    this->pob_spi->AnalogRead(k_si_pot_lfo_freq);
+
 }
 
 
-void Measurements::ConfigureADSR() {
+void Measurements::GetADSR(void) {
   this->st_measurements.si_attack_time =
       this->pob_spi->AnalogRead(k_si_pot_attack_time);
 
@@ -59,16 +57,16 @@ void Measurements::ConfigureADSR() {
 }
 
 
-void Measurements::ChangeVolume() {
+void Measurements::GetVolume(void) {
   this->st_measurements.si_volume =
       this->pob_spi->AnalogRead(k_si_pot_volume);
 }
 
 
 Meas_t Measurements::GetMeasurements() {
-  this->ConfigureOscillators();
-  this->ConfigureADSR();
-  this->ChangeVolume();
+  this->GetOscillators();
+  this->GetADSR();
+  this->GetVolume();
 
   return this->st_measurements;
 }
@@ -94,7 +92,8 @@ std::ostream& operator << (std::ostream& cout, const Measurements& ob_meas)
 		"\nOscillator two: " << ob_meas.st_measurements.pe_oscillator[1] <<
 		"\nOctave one:     " << ob_meas.st_measurements.psi_octave[0] <<
 		"\nOctave two:     " << ob_meas.st_measurements.psi_octave[1] <<
-		"\nLFO:            " << ob_meas.st_measurements.si_lfo <<
+		"\nLFO amplitude:  " << ob_meas.st_measurements.si_lfo_amp <<
+    "\nLFO frequency:  " << ob_meas.st_measurements.si_lfo_freq <<
 		"\nAttack Time:    " << ob_meas.st_measurements.si_attack_time <<
 		"\nDecay Time:     " << ob_meas.st_measurements.si_decay_time <<
 		"\nSustain Level:  " << ob_meas.st_measurements.si_sustain_level <<

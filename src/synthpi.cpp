@@ -17,15 +17,12 @@
 #include "oscillator.h"
 
 // Global variables definition
-Measurements gob_measurements;
-Configuration gob_configuration;
-Meas_t gst_measurements;
 Config_t gst_configuration;
 sem_t gmx_configuration;
 bool gb_exit = false;
+Oscillator gob_oscillator1;
 
-
-// Global varialbes definition
+// Global variables definition
 double gf_freq = 0.0;
 Osc_t ge_oscillator = OSC_SINE;
 
@@ -41,7 +38,8 @@ float SoundGenerator(float f_time){
   sem_post(&gmx_configuration);
 
   f_mixed_output = f_volume *
-      oscillator(gf_freq, f_time, ge_oscillator, 0.0, 0.0);
+      gob_oscillator1.GenerateOscillation(gf_freq, f_time, gst_configuration, 0);
+
 
   return f_mixed_output;
 }
@@ -51,12 +49,22 @@ void MeasurementsFunc() {
   /* MEASUREMENTSFUNC execute all the capabilities related with measurements
    * from external devices which are used as configuration. */
 
+  // Object initialization
+  Measurements gob_measurements;
+  Configuration gob_configuration;
+  Meas_t gst_measurements;
+
+  // Measurements acquisition and processing
   while ( !gb_exit ) {
     sem_wait(&gmx_configuration);
+
     gst_measurements = gob_measurements.GetMeasurements();
     gst_configuration = gob_configuration.GetConfiguration(gst_measurements);
+    //std::cout << gob_measurements << std::endl;
+    //std::cout << gob_configuration << std::endl;
     sem_post(&gmx_configuration);
-    delay(10);
+
+    delay(10);  // avoid port saturation
   }
 }
 
@@ -92,11 +100,6 @@ void SoundFunc(void){
 
   // Generate and play sounds
   while(!gb_exit){
-      // Select oscillator
-      ge_oscillator = static_cast<Osc_t> (
-          digitalRead(k_psi_gpio_oscillator_m[0])*2 +
-          digitalRead(k_psi_gpio_oscillator_l[0])
-          );
 
       // Check key note
       for (int i = 0; i < k_si_n_keys; i++){

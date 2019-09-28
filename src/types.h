@@ -23,7 +23,8 @@ typedef struct measurements {
   int si_volume;
   Osc_t pe_oscillator[2];
   int psi_octave[2];
-  int si_lfo;
+  int si_lfo_amp;
+  int si_lfo_freq;
   int si_attack_time;
   int si_decay_time;
   int si_sustain_level;
@@ -36,7 +37,8 @@ typedef struct configuration {
   float f_volume;
   Osc_t pe_oscillator[2];
   int psi_octave[2];
-  float f_lfo;
+  float f_lfo_amp;
+  float f_lfo_freq;
   float f_attack_time;
   float f_decay_time;
   float f_sustain_level;
