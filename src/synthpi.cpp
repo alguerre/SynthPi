@@ -6,6 +6,7 @@
 #include "wiringPi.h"
 //#include "measurements.h"
 #include "audio_driver.h"
+#include "oscillator.h"
 
 #define FREQ_C 261.626
 #define FREQ_D 293.664
@@ -28,56 +29,13 @@ double gf_freq = 0.0;
 Osc_t ge_oscillator = OSC_SINE;
 
 
-float oscillator(float f_time) {
-  /* OSCILLATOR returns the the amplitude of the specified oscillator eType
-    at a given moment given its frequency.*/
+float sound_generator(float f_time){
+  /* SOUND_GENERATOR produce the waveform value. It is called by audio_driver
+   * to generate the complete waveform and play it. */
+  float f_mixed_output = 0.0;
+  f_mixed_output = oscillator(gf_freq, f_time, ge_oscillator, 0.0, 0.0);
 
-  // Initialization
-  float f_output = 0.0;
-
-  // Frequency oscillation times time
-  float f_wt = gf_freq * 2.0 * M_PI * f_time;
-
-  // Oscillator definitions
-  switch (ge_oscillator) {
-  case OSC_SINE:
-    f_output = sin(f_wt);
-    break;
-
-  case OSC_SQUARE:
-    f_output = sin(f_wt) > 0 ? 1.0 : -1.0;
-    break;
-
-  case OSC_TRIANGLE:
-    f_output = asin(sin(f_wt)) * M_2_PI;
-    break;
-
-  case OSC_SAW_DIG:  // summation of Fourier harmonics
-    f_output = 0.0;
-
-    for (int n = 1; n < 50; n++)  // 50 armonics are used by default
-      f_output += (sin(n * gf_freq * 2.0 * M_PI * f_time)) / ((float) n);
-
-    f_output = f_output * M_2_PI;
-    break;
-
-  case OSC_SAW:  // computation of sawtooth signal arithmetically
-    f_output = M_2_PI * (gf_freq * M_PI * fmod(f_time, 1.0 / gf_freq) - M_PI_2);
-    break;
-
-  case OSC_NOISE:
-    return 2.0 * ((float)rand() / (float)RAND_MAX) - 1.0;
-    break;
-
-  default:
-    f_output = 0.0;
-  }
-
-  if (gf_freq < 1.0){
-    f_output = 0.0;
-  }
-
-  return f_output;
+  return f_mixed_output;
 }
 
 
@@ -138,8 +96,11 @@ int main(void){
   // Generate and play sounds
   while(1){
       // Select oscillator
-      ge_oscillator = static_cast<Osc_t> (digitalRead(k_psi_gpio_oscillator_m[0])*2 +
-          digitalRead(k_psi_gpio_oscillator_l[0]));
+      ge_oscillator = static_cast<Osc_t> (
+          digitalRead(k_psi_gpio_oscillator_m[0])*2 +
+          digitalRead(k_psi_gpio_oscillator_l[0])
+          );
+
       // Check key note
       for (int i = 0; i < k_si_n_keys; i++){
         if (digitalRead(k_psi_keys[i]) == 1){
@@ -148,7 +109,7 @@ int main(void){
       }
 
       // Write PCM buffer
-      ob_audiodriver->PlaySound(oscillator);
+      ob_audiodriver->PlaySound(sound_generator);
 
       gf_freq = 0.0;
   }

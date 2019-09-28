@@ -53,59 +53,6 @@ Meas_t WaveformGenerator::GetConfiguration() {
 }
 
 
-float WaveformGenerator::Oscillator(const float f_freq, const Osc_t eType) {
-  /* OSCILLATOR returns the the amplitude of the specified oscillator eType
-  at a given moment given its frequency.*/
-
-  // Initialization
-  float f_output = 0.0;
-
-  // Frequency oscillation times time
-  float f_w_t = f_freq * 2.0 * M_PI * this->f_time;
-
-  // Oscillator definitions
-  switch (eType) {
-  case OSC_SINE:
-    f_output = sin(f_w_t);
-    break;
-
-  case OSC_SQUARE:
-    f_output = sin(f_w_t) > 0 ? 1.0 : -1.0;
-    break;
-
-  case OSC_TRIANGLE:
-    f_output = asin(sin(f_w_t)) * M_2_PI;
-    break;
-
-  case OSC_SAW:
-    f_output = M_2_PI * (f_freq * M_PI * fmod(this->f_time, 1.0 / f_freq) - M_PI_2);
-    break;
-
-  case OSC_NOISE:
-    f_output = 2.0 * ((float)rand() / (float)RAND_MAX) - 1.0;
-    break;
-
-  default:
-    f_output = 0.0;
-  }
-
-  return f_output * this->f_volume;
-}
-
-
-void WaveformGenerator::CreateOscillators(const float f_freq) {
-
-  for (int i = 0; i < SND_PCM_PERIOD_SIZE; i++) {
-    for (int j = 0; j < k_si_n_oscillators; j++) {
-      this->pv_oscillator_wave[j].at(i) =
-        this->Oscillator(f_freq, this->st_waveform_config.pe_oscillator[j]);
-    }
-    this->f_time += f_time_elapsed;
-  }
-    
-}
-
-
 void WaveformGenerator::CreateEnvelope() {
 }
 

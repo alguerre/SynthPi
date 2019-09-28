@@ -51,4 +51,8 @@ const int k_psi_keys[6] = {29, 28, 27, 26, 21, 3};
 // ADSR
 const float k_f_minimum_amplitude_adsr = (float) 0.001;
 
+
+// Oscillator
+const int k_si_n_sawdig_harmonics = 10;
+
 #endif

@@ -34,7 +34,6 @@ private:
 
   // Methods
   void CreateEnvelope();
-  float Oscillator(float, Osc_t);
 
 public:
 
@@ -42,7 +41,6 @@ public:
   WaveformGenerator();
 
   // Methods
-  void CreateOscillators(float);
   void SetConfiguration(Meas_t);
   float * CreateWaveform();
   Meas_t GetConfiguration();
