@@ -113,14 +113,14 @@ void ConfigureWiringPi() {
   wiringPiSetup();
 
   // Set input mode for keys
-  for (int i = 0; i < k_n_keys; i++) {
-    pinMode(pk_keys[i], INPUT);
+  for (int i = 0; i < k_si_n_keys; i++) {
+    pinMode(k_psi_keys[i], INPUT);
   }
 
   // Set input keys for oscillator selection
-  for (int i = 0; i < k_n_oscillators; i++) {
-    pinMode(pk_gpio_oscillator_m[i], INPUT);
-    pinMode(pk_gpio_oscillator_l[i], INPUT);
+  for (int i = 0; i < k_si_n_oscillators; i++) {
+    pinMode(k_psi_gpio_oscillator_m[i], INPUT);
+    pinMode(k_psi_gpio_oscillator_l[i], INPUT);
   }
 }
 
@@ -138,11 +138,11 @@ int main(void){
   // Generate and play sounds
   while(1){
       // Select oscillator
-      ge_oscillator = static_cast<Osc_t> (digitalRead(pk_gpio_oscillator_m[0])*2 +
-          digitalRead(pk_gpio_oscillator_l[0]));
+      ge_oscillator = static_cast<Osc_t> (digitalRead(k_psi_gpio_oscillator_m[0])*2 +
+          digitalRead(k_psi_gpio_oscillator_l[0]));
       // Check key note
-      for (int i = 0; i < k_n_keys; i++){
-        if (digitalRead(pk_keys[i]) == 1){
+      for (int i = 0; i < k_si_n_keys; i++){
+        if (digitalRead(k_psi_keys[i]) == 1){
           gf_freq = pf_notes[i];
         }
       }

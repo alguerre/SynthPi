@@ -31,7 +31,7 @@ bool SpiMcp3008::Setup(int si_spi_channel) {
   if ((si_spi_channel != 0) && (si_spi_channel != 1))
     return false;
 
-  if (wiringPiSPISetup(si_spi_channel, k_spi_speed) < 0)
+  if (wiringPiSPISetup(si_spi_channel, k_si_spi_speed) < 0)
     return false;
 
   return true;
@@ -53,7 +53,7 @@ int SpiMcp3008::AnalogRead(const int si_chip_channel) {
   */
   unsigned char puc_spi_data[3];
 
-  if (si_chip_channel > k_spi_max_channel)
+  if (si_chip_channel > k_si_spi_max_channel)
     return -1;
 
   puc_spi_data[0] = 0x1;

@@ -18,7 +18,7 @@ private:
     
   // Properties
   Meas_t st_measurements;
-  SpiMcp3008 *pob_spi = SpiMcp3008::GetInstance(k_spi_channel);
+  SpiMcp3008 *pob_spi = SpiMcp3008::GetInstance(k_si_spi_channel);
 
   // Methods
   void ConfigureOscillators();

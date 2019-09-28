@@ -130,7 +130,7 @@ float EnvelopeADSR::GetAmplitude(float dTime) {
   }
 
   // Amplitude should not be negative
-  if (f_amplitude <= k_minimum_amplitude_adsr)
+  if (f_amplitude <= k_f_minimum_amplitude_adsr)
     f_amplitude = 0.0;
 
   return f_amplitude;
