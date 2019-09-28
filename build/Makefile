@@ -10,7 +10,7 @@ BIN_TEST = synthpi_test
 BIN_PRODUCTION = synthpi
 BIN_NAME =   # to be defined as production or test by corresponding rule
 
-GPP_PRODUCTION_FLAGS = -O2 -funroll-loops -lwiringPi -lcrypt -lpthread -lasound -lm -Wno-psabi 
+GPP_PRODUCTION_FLAGS = -O2 -funroll-loops -Wall -lwiringPi -lcrypt -lpthread -lasound -lm -Wno-psabi 
 GPP_TEST_FLAGS = -fprofile-arcs -ftest-coverage -I /usr/local/include
 GPP_FLAGS =  # to be defined as production or test by corresponding rule
 
@@ -19,7 +19,7 @@ LD_TEST_FLAGS = -Wno-psabi -lgcov -L /usr/local/lib -lgtest
 LD_FLAGS =   # to be defined as production or test by corresponding rule
   
 OBJ_MAIN = synthpi.o
-OBJ_SRC = audio_driver.o waveform_generator.o measurements.o  mcp3008.o envelope_adsr.o oscillator.o
+OBJ_SRC = audio_driver.o waveform_generator.o measurements.o  mcp3008.o envelope_adsr.o oscillator.o configuration.o
 OBJ_TEST = test.o ut_audio_driver.o ut_waveform_generator.o ut_envelope_adsr.o #ut_measurements.o ut_mcp3008.o
 OBJECTS =    # to be defined as production or test by corresponding rule
 
@@ -53,6 +53,9 @@ envelope_adsr.o: $(SRC)/envelope_adsr.cpp $(SRC)/envelope_adsr.h
 oscillator.o: $(SRC)/oscillator.cpp $(SRC)/oscillator.h
 	$(GPP) $(GPP_FLAGS) -c $(SRC)/oscillator.cpp
 
+configuration.o: $(SRC)/configuration.cpp $(SRC)/configuration.h
+	$(GPP) $(GPP_FLAGS) -c $(SRC)/configuration.cpp
+	
 test.o: $(TEST)/test.cpp
 	$(GPP) $(GPP_FLAGS) -c $(TEST)/test.cpp
 
