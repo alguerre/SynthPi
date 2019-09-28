@@ -8,15 +8,6 @@
 #include "audio_driver.h"
 #include "oscillator.h"
 
-#define FREQ_C 261.626
-#define FREQ_D 293.664
-#define FREQ_E 329.628
-#define FREQ_F 349.228
-#define FREQ_G 391.996
-#define FREQ_A 440.000
-
-float pf_notes[6] = {FREQ_C, FREQ_D, FREQ_E, FREQ_F, FREQ_G, FREQ_A};
-
 // Global variables definition
 //Measurements gob_measurements;
 //Meas_t gst_measurements;
@@ -104,7 +95,7 @@ int main(void){
       // Check key note
       for (int i = 0; i < k_si_n_keys; i++){
         if (digitalRead(k_psi_keys[i]) == 1){
-          gf_freq = pf_notes[i];
+          gf_freq = k_f_base_freq * pow(k_f_freq_note_interval, i);
         }
       }
 
